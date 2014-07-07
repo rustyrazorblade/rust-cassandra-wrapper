@@ -1,0 +1,13 @@
+[package]
+name = "cassandra"
+version = "0.0.1"
+authors = [ "tupshin@tupshin.com" ]
+
+[[bin]]
+name="main"
+
+[[lib]]
+name = "cassandra" # the name of the library to generate
+
+[dependencies.rust-cassandra-internal-api]
+git = "https://github.com/tupshin/rust-cassandra-internal-api"
