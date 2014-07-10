@@ -4,7 +4,7 @@ version = "0.0.1"
 authors = [ "tupshin@tupshin.com" ]
 
 [[bin]]
-name="main"
+name="basic"
 
 [[lib]]
 name = "cassandra" # the name of the library to generate
