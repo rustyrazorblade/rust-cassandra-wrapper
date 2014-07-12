@@ -13,6 +13,11 @@ pub struct CassError {
 
 #[allow(dead_code)]
 impl CassError {
+  pub fn new (err:u32) -> CassError {
+    CassError{cass_error:err}
+  }
+
+
   pub fn cass_error_desc(&self) -> *const c_char {unsafe{
     cass_internal_api::cass_error_desc(self.cass_error)
   }}

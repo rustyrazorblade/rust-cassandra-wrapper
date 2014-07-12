@@ -1,16 +1,21 @@
 extern crate cass_internal_api;
 
-use self::cass_internal_api::CassSession;
-use self::cass_internal_api::CassPrepared;
-use self::cass_internal_api::CassResult;
-use self::cass_internal_api::CassString;
+// use self::cass_internal_api::CassSession;
+// use self::cass_internal_api::CassPrepared;
+// use self::cass_internal_api::CassResult;
+// use self::cass_internal_api::CassString;
 //use self::cass_internal_api::CassError;
 use self::cass_internal_api::cass_bool_t;
 use self::cass_internal_api::cass_duration_t;
-use self::cass_internal_api::Struct_CassFuture_;
+//use self::cass_internal_api::Struct_CassFuture_;
+
+use cassandra::session::CassSession;
 
 //use cassandra::error::CASS_OK;
 use cassandra::error::CassError;
+use cassandra::result::CassResult;
+use cassandra::statement::CassPrepared;
+use cassandra::types::CassString;
 
 mod cassandra {
 #[path="../error.rs"] pub mod error;
@@ -18,7 +23,7 @@ mod cassandra {
 
 #[allow(dead_code)]
 pub struct CassFuture {
-  pub cass_future:*mut Struct_CassFuture_,
+  pub cass_future:*mut  self::cass_internal_api::Struct_CassFuture_
 }
 
 #[allow(dead_code)]
@@ -39,16 +44,16 @@ impl CassFuture {
     cass_internal_api::cass_future_wait_timed((self).cass_future,timeout)
   }}
 
-  pub fn session(self) -> *mut CassSession {unsafe{
-    cass_internal_api::cass_future_get_session( (self).cass_future)
+  pub fn session(self) -> CassSession {unsafe{
+    CassSession{cass_session:cass_internal_api::cass_future_get_session(self.cass_future)}
   }}
 
-  pub fn result(self) -> *const CassResult {unsafe{
-    cass_internal_api::cass_future_get_result( (self).cass_future)
+  pub fn get_result(self) -> CassResult {unsafe{
+    CassResult{cass_result:*cass_internal_api::cass_future_get_result(self.cass_future)}
   }}
 
-  pub fn get_prepared(self) -> *const CassPrepared {unsafe{
-    cass_internal_api::cass_future_get_prepared( (self).cass_future)
+  pub fn get_prepared(self) -> CassPrepared {unsafe{
+    CassPrepared{cass_prepared:*cass_internal_api::cass_future_get_prepared(self.cass_future)}
   }}
 
   pub fn error_code(self) -> CassError {unsafe{
@@ -56,6 +61,6 @@ impl CassFuture {
   }}
 
   pub fn error_message(self) -> CassString {unsafe{
-    cass_internal_api::cass_future_error_message( (self).cass_future)
+    CassString{cass_string:cass_internal_api::cass_future_error_message( self.cass_future)}
   }}
 }

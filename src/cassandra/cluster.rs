@@ -14,8 +14,13 @@ mod cassandra {
   #[path="../future.rs"] pub mod future;
 }
 
+
+pub static CASS_OPTION_CONTACT_POINTS:u32 = self::cass_internal_api::CASS_OPTION_CONTACT_POINTS;
+
+
 #[allow(dead_code)]
 pub struct CassCluster<'a> {
+
   pub cass_cluster:*mut cass_internal_api::CassCluster
 }
 

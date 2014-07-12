@@ -1,36 +1,34 @@
 #[allow(dead_code)]
 extern crate cass_internal_api;
 
-use self::cass_internal_api::cass_bool_t;
-
-
-use self::cass_internal_api::CassRow;
-use self::cass_internal_api::CassValue;
+use cassandra::row::CassRow;
+use cassandra::types::CassValue;
 
 #[allow(dead_code)]
 pub struct CassIterator {
-  cass_iterator:self::cass_internal_api::CassIterator
+  pub cass_iterator:*mut self::cass_internal_api::CassIterator
 }
 
 #[allow(dead_code)]
 impl CassIterator {
-  pub fn free(&mut self) {unsafe{
-    cass_internal_api::cass_iterator_free(&mut(*self).cass_iterator)
+  pub fn free(self) {unsafe{
+    cass_internal_api::cass_iterator_free(self.cass_iterator)
   }}
 
-  pub fn next(&mut self) -> cass_bool_t {unsafe{
-    cass_internal_api::cass_iterator_next(&mut(*self).cass_iterator)
+  pub fn next(self) -> bool {unsafe{
+    cass_internal_api::cass_iterator_next(self.cass_iterator) > 0
   }}
 
-  pub fn get_row(&mut self) -> *const CassRow {unsafe{
-    cass_internal_api::cass_iterator_get_row(&mut(*self).cass_iterator)
+  pub fn get_row(self) -> CassRow {unsafe{
+    let row = cass_internal_api::cass_iterator_get_row(self.cass_iterator);
+    CassRow{cass_row:*row}
   }}
 
-  pub fn get_column(&mut self) -> *const CassValue {unsafe{
-    cass_internal_api::cass_iterator_get_column(&mut(*self).cass_iterator)
+  pub fn get_column(self) -> CassValue {unsafe{
+    CassValue{cass_value:cass_internal_api::cass_iterator_get_column(self.cass_iterator)}
   }}
 
-  pub fn get_value(&mut self) -> *const CassValue {unsafe{
-    cass_internal_api::cass_iterator_get_value(&mut(*self).cass_iterator)
+  pub fn get_value(self) -> CassValue {unsafe{
+    CassValue{cass_value:cass_internal_api::cass_iterator_get_value(self.cass_iterator)}
   }}
 }

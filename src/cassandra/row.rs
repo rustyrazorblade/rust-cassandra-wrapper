@@ -1,9 +1,25 @@
 extern crate cass_internal_api;
 
-pub fn cass_iterator_from_row(row: *const CassRow) -> *mut CassIterator {unsafe{
-  cass_internal_api::cass_iterator_from_row(row)
-}}
+use cassandra::iterator::CassIterator;
+use cassandra::types::CassValue;
 
-pub fn cass_row_get_column(row: *const CassRow, index: cass_size_t) -> *const CassValue {unsafe{
-  cass_internal_api::cass_row_get_column(row,index)
-}}
+#[path = "../cassandra/mod.rs"] mod cassandra
+{
+  #[path="../iterator.rs"] pub mod iterator;
+}
+
+
+pub struct CassRow {
+  pub cass_row:self::cass_internal_api::CassRow
+}
+
+impl CassRow {
+  pub fn cass_iterator_from_row(row: CassRow) -> CassIterator {unsafe{
+    CassIterator{cass_iterator:cass_internal_api::cass_iterator_from_row(&row.cass_row)}
+  }}
+
+  pub fn get_column(self, index: u64) -> CassValue {unsafe{
+    CassValue{cass_value:cass_internal_api::cass_row_get_column(&self.cass_row,index)}
+  }}
+
+}

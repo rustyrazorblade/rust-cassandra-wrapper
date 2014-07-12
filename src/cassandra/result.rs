@@ -1,21 +1,20 @@
 extern crate cass_internal_api;
 
 use self::cass_internal_api::cass_size_t;
-use self::cass_internal_api::CassResult;
 use self::cass_internal_api::CassValueType;
 use self::cass_internal_api::CassRow;
 use self::cass_internal_api::CassString;
 use self::cass_internal_api::CassIterator;
 
 #[allow(dead_code)]
-pub struct Result {
-  cass_result:self::cass_internal_api::CassResult
+pub struct CassResult {
+  pub cass_result:self::cass_internal_api::CassResult
 }
 
 #[allow(dead_code)]
-impl Result {
-  pub fn free(&self) {unsafe{
-    cass_internal_api::cass_result_free(&(*self).cass_result)
+impl CassResult {
+  pub fn free(self) {unsafe{
+    cass_internal_api::cass_result_free(&self.cass_result)
   }}
 
   pub fn row_count(&self) -> cass_size_t {unsafe{
@@ -38,7 +37,7 @@ impl Result {
     cass_internal_api::cass_result_first_row(&(*self).cass_result)
   }}
 
-  pub fn to_iterator(&self) -> *mut CassIterator {unsafe{
+  pub fn iterator(&self) -> *mut CassIterator {unsafe{
     cass_internal_api::cass_iterator_from_result(&(*self).cass_result)
   }}
 }

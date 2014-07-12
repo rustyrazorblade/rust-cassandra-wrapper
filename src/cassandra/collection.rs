@@ -1,49 +1,70 @@
 extern crate cass_internal_api;
 
-pub fn new(item_count: cass_size_t) -> *mut CassCollection {unsafe{
-  cass_internal_api::cass_collection_new
-}}
+use cassandra::error::CassError;
+use cassandra::types::CassDecimal;
+use cassandra::types::CassInet;
+use cassandra::types::CassUuid;
+use cassandra::types::CassBytes;
+use cassandra::types::CassString;
+use cassandra::types::CassBoolType;
+use cassandra::types::CassDoubleType;
+use cassandra::types::CassFloatType;
+use cassandra::types::CassInt64Type;
+use cassandra::types::CassInt32Type;
+use cassandra::types::CassSizeType;
 
-pub fn free(collection: *mut CassCollection) {
-  cass_internal_api::cass_collection_free(collection)
-}}
+#[allow(dead_code)]
+pub struct CassCollection {
+  pub cass_collection:*mut cass_internal_api::CassCollection
+}
 
-pub fn append_int32(collection: *mut CassCollection, value: cass_int32_t) -> CassError {unsafe{
-  cass_internal_api::cass_collection_append_int32(collection,value)
-}}
+#[allow(dead_code)]
+impl CassCollection {
+  pub fn new(item_count: CassSizeType) -> CassCollection {
+    CassCollection{cass_collection:cass_internal_api::cass_collection_new as *mut cass_internal_api::Struct_CassCollection_}
+  }
 
-pub fn append_int64(collection: *mut CassCollection, value: cass_int64_t) -> CassError {unsafe{
-  cass_internal_api::cass_collection_append_int64(collection,value)
-}}
+  pub fn free(collection: CassCollection) {unsafe{
+    cass_internal_api::cass_collection_free(collection.cass_collection)
+  }}
 
-pub fn append_float(collection: *mut CassCollection, value: cass_float_t) -> CassError {unsafe{
-    cass_internal_api::cass_collection_append_float(collection,value)
-}}
+  pub fn append_int32(collection: CassCollection, value: CassInt32Type) -> CassError {unsafe{
+    CassError{cass_error:cass_internal_api::cass_collection_append_int32(collection.cass_collection,value.cass_int32_type)}
+  }}
 
-pub fn append_double(collection: *mut CassCollection, value: cass_double_t) -> CassError {unsafe{
-  cass_internal_api::cass_collection_append_double(collection,value)
-}}
+  pub fn append_int64(collection: CassCollection, value: CassInt64Type) -> CassError {unsafe{
+    CassError{cass_error:cass_internal_api::cass_collection_append_int64(collection.cass_collection,value.cass_int64_type)}
+  }}
 
-pub fn append_bool(collection: *mut CassCollection, value: cass_bool_t) -> CassError {unsafe{
-  cass_internal_api::cass_collection_append_bool(collection,value)
-}}
+  pub fn append_float(collection: CassCollection, value: CassFloatType) -> CassError {unsafe{
+      CassError{cass_error:cass_internal_api::cass_collection_append_float(collection.cass_collection,value.cass_float_type)}
+  }}
 
-pub fn append_string(collection: *mut CassCollection, value: CassString) -> CassError {unsafe{
-  cass_internal_api::cass_collection_append_string(collection,value)
-}}
+  pub fn append_double(collection: CassCollection, value: CassDoubleType) -> CassError {unsafe{
+    CassError{cass_error:cass_internal_api::cass_collection_append_double(collection.cass_collection,value.cass_double_type)}
+  }}
 
-pub fn append_bytes(collection: *mut CassCollection, value: CassBytes) -> CassError {unsafe{
-  cass_internal_api::cass_collection_append_bytes(collection,value)
-}}
+  pub fn append_bool(collection: CassCollection, value: CassBoolType) -> CassError {unsafe{
+    CassError{cass_error:cass_internal_api::cass_collection_append_bool(collection.cass_collection,value.cass_bool_type)}
+  }}
 
-pub fn append_uuid(collection: *mut CassCollection, value: CassUuid) -> CassError {unsafe{
-  cass_internal_api::cass_collection_append_uuid(collection,value)
-}}
+  pub fn append_string(collection: CassCollection, value: CassString) -> CassError {unsafe{
+    CassError{cass_error:cass_internal_api::cass_collection_append_string(collection.cass_collection,value.cass_string)}
+  }}
 
-pub fn append_inet(collection: *mut CassCollection, value: CassInet) -> CassError {unsafe{
-  cass_internal_api::cass_collection_append_inet(collection,value)
-}}
+  pub fn append_bytes(collection: CassCollection, value: CassBytes) -> CassError {unsafe{
+    CassError{cass_error:cass_internal_api::cass_collection_append_bytes(collection.cass_collection,*value.cass_bytes)}
+  }}
 
-pub fn append_decimal(collection: *mut CassCollection, value: CassDecimal) -> CassError {unsafe{
-  cass_internal_api::cass_collection_append_decimal(collection,value)
-}}
+  pub fn append_uuid(collection: CassCollection, value: CassUuid) -> CassError {unsafe{
+    CassError{cass_error:cass_internal_api::cass_collection_append_uuid(collection.cass_collection,value.cass_uuid)}
+  }}
+
+  pub fn append_inet(collection: CassCollection, value: CassInet) -> CassError {unsafe{
+    CassError{cass_error:cass_internal_api::cass_collection_append_inet(collection.cass_collection,*value.cass_inet)}
+    }}
+
+  pub fn append_decimal(collection: CassCollection, value: CassDecimal) -> CassError {unsafe{
+    CassError::new(cass_internal_api::cass_collection_append_decimal(collection.cass_collection,*value.cass_decimal))
+    }}
+}
