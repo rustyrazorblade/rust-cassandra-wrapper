@@ -1,0 +1,16 @@
+extern crate cass_internal_api;
+extern crate libc;
+
+use self::libc::c_char;
+
+#[allow(dead_code)]
+pub struct CassError {
+  pub cass_error:cass_internal_api::CassError
+}
+
+#[allow(dead_code)]
+impl CassError {
+  pub fn cass_error_desc(&self) -> *const c_char {unsafe{
+    cass_internal_api::cass_error_desc(self.cass_error)
+  }}
+}
