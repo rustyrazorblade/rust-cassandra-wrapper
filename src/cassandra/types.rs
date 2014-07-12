@@ -1,6 +1,8 @@
 extern crate cass_internal_api;
 extern crate libc;
 
+use std::c_str::CString;
+
 use self::cass_internal_api::cass_size_t;
 use self::cass_internal_api::cass_byte_t;
 use self::cass_internal_api::cass_bool_t;
@@ -21,6 +23,10 @@ use self::cass_internal_api::CassUuid;
 use self::cass_internal_api::CassIterator;
 
 use self::libc::c_char;
+
+pub fn string_init(null_terminated: CString) -> CassString {unsafe{
+  cass_internal_api::cass_string_init(null_terminated .as_ptr() as *const i8)
+}}
 
 #[allow(dead_code)]
 pub struct CassValue {
@@ -142,11 +148,7 @@ impl CassValue {
     cass_internal_api::cass_bytes_init(data,size)
   }}
 
-  pub fn cass_string_init(null_terminated: *const c_char) -> CassString {unsafe{
-    cass_internal_api::cass_string_init(null_terminated)
-  }}
-
-  pub fn cass_string_init2(data: *const c_char, length: cass_size_t) -> CassString {unsafe{
+  pub fn string_init2(data: *const c_char, length: cass_size_t) -> CassString {unsafe{
     cass_internal_api::cass_string_init2(data,length)
   }}
 

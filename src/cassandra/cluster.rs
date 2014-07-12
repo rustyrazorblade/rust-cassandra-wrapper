@@ -23,7 +23,7 @@ pub struct CassCluster<'a> {
 impl<'a> CassCluster<'a> {
 
   pub fn new() -> CassCluster {unsafe{
-    CassCluster{cass_cluster:&mut*cass_internal_api::cass_cluster_new()}
+    CassCluster{cass_cluster:cass_internal_api::cass_cluster_new()}
   }}
 
      pub fn setopt(&mut self, option: CassOption, data: *const c_void, data_length: cass_size_t) -> CassError {unsafe{

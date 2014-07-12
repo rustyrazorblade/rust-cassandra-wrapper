@@ -1,29 +1,38 @@
 extern crate cass_internal_api;
-use self::cass_internal_api::CassFuture;
-use self::cass_internal_api::CassString;
-use self::cass_internal_api::CassStatement;
-use self::cass_internal_api::CassBatch;
+// use self::cass_internal_api::CassFuture;
+// use self::cass_internal_api::CassString;
+// use self::cass_internal_api::CassStatement;
+// use self::cass_internal_api::CassBatch;
+
+use cassandra::statement::CassStatement;
+use cassandra::future::CassFuture;
 
 #[allow(dead_code)]
 pub struct CassSession {
-  pub cass_session:cass_internal_api::CassSession
+  pub cass_session:*mut cass_internal_api::CassSession
+}
+
+
+mod cassandra {
+#[path="../statement.rs"] pub mod statement;
+#[path="../future.rs"] pub mod future;
 }
 
 #[allow(dead_code)]
 impl CassSession {
-  pub fn cass_session_close(&mut self) -> *mut CassFuture {unsafe{
-    cass_internal_api::cass_session_close(&mut(*self).cass_session)
+  pub fn cass_session_close(&mut self) -> *mut self::cass_internal_api::CassFuture {unsafe{
+    cass_internal_api::cass_session_close((*self).cass_session)
   }}
 
-  pub fn cass_session_prepare(&mut self, statement: CassString) -> *mut CassFuture {unsafe{
-    cass_internal_api::cass_session_prepare(&mut(*self).cass_session,statement)
+  pub fn cass_session_prepare(&mut self, statement: self::cass_internal_api::CassString) -> *mut self::cass_internal_api::CassFuture {unsafe{
+    cass_internal_api::cass_session_prepare((*self).cass_session,statement)
   }}
 
-  pub fn cass_session_execute(&mut self, statement: *mut CassStatement) -> *mut CassFuture {unsafe{
-    cass_internal_api::cass_session_execute(&mut(*self).cass_session,statement)
+  pub fn execute(&mut self, statement: CassStatement) -> CassFuture {unsafe{
+    CassFuture{cass_future:cass_internal_api::cass_session_execute((*self).cass_session,statement.cass_statement)}
   }}
 
-  pub fn cass_session_execute_batch(&mut self, batch: *mut CassBatch) -> *mut CassFuture {unsafe{
-    cass_internal_api::cass_session_execute_batch(&mut(*self).cass_session,batch)
+  pub fn cass_session_execute_batch(&mut self, batch: *mut self::cass_internal_api::CassBatch) -> *mut self::cass_internal_api::CassFuture {unsafe{
+    cass_internal_api::cass_session_execute_batch((*self).cass_session,batch)
   }}
 }
