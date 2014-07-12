@@ -38,7 +38,7 @@ pub struct Basic {
 
 fn print_error(future:*mut cassandra::future::CassFuture) {unsafe{
   let message = future.error_message();
-  println!("Error: {}", message.data);//FIXME stderr
+  //println!("Error: {}", message.data);//FIXME stderr
 }}
 
 pub fn create_cluster() -> *mut cassandra::cluster::CassCluster {unsafe{

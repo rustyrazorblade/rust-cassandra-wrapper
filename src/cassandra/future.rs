@@ -1,4 +1,3 @@
-
 extern crate cass_internal_api;
 
 use self::cass_internal_api::CassSession;
@@ -10,10 +9,11 @@ use self::cass_internal_api::cass_bool_t;
 use self::cass_internal_api::cass_duration_t;
 use self::cass_internal_api::Struct_CassFuture_;
 
+//use cassandra::error::CASS_OK;
 use cassandra::error::CassError;
 
 mod cassandra {
-#[path="../error.rs"] pub mod future;
+#[path="../error.rs"] pub mod error;
 }
 
 #[allow(dead_code)]

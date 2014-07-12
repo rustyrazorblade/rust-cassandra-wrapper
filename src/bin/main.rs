@@ -11,7 +11,7 @@
 // use cassandra::select_from_basic;
 //
  fn main()  {
-   println!{"main"}
+   //println!{"main"}
  }
 //   unsafe {
 //     let cluster:*mut CassCluster = cassandra::create_cluster();

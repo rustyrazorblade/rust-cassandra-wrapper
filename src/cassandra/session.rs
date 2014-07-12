@@ -1,8 +1,4 @@
 extern crate cass_internal_api;
-// use self::cass_internal_api::CassFuture;
-// use self::cass_internal_api::CassString;
-// use self::cass_internal_api::CassStatement;
-// use self::cass_internal_api::CassBatch;
 
 use cassandra::statement::CassStatement;
 use cassandra::future::CassFuture;
@@ -13,6 +9,8 @@ pub struct CassSession {
 }
 
 
+
+
 mod cassandra {
 #[path="../statement.rs"] pub mod statement;
 #[path="../future.rs"] pub mod future;
@@ -20,19 +18,19 @@ mod cassandra {
 
 #[allow(dead_code)]
 impl CassSession {
-  pub fn cass_session_close(&mut self) -> *mut self::cass_internal_api::CassFuture {unsafe{
-    cass_internal_api::cass_session_close((*self).cass_session)
+  pub fn close(self) -> *mut self::cass_internal_api::CassFuture {unsafe{
+    cass_internal_api::cass_session_close(self.cass_session)
   }}
 
-  pub fn cass_session_prepare(&mut self, statement: self::cass_internal_api::CassString) -> *mut self::cass_internal_api::CassFuture {unsafe{
-    cass_internal_api::cass_session_prepare((*self).cass_session,statement)
+  pub fn prepare(self, statement: self::cass_internal_api::CassString) -> *mut self::cass_internal_api::CassFuture {unsafe{
+    cass_internal_api::cass_session_prepare(self.cass_session,statement)
   }}
 
-  pub fn execute(&mut self, statement: CassStatement) -> CassFuture {unsafe{
-    CassFuture{cass_future:cass_internal_api::cass_session_execute((*self).cass_session,statement.cass_statement)}
+  pub fn execute(self, statement: CassStatement) -> CassFuture {unsafe{
+    CassFuture{cass_future:cass_internal_api::cass_session_execute(self.cass_session,statement.cass_statement)}
   }}
 
-  pub fn cass_session_execute_batch(&mut self, batch: *mut self::cass_internal_api::CassBatch) -> *mut self::cass_internal_api::CassFuture {unsafe{
-    cass_internal_api::cass_session_execute_batch((*self).cass_session,batch)
+  pub fn execute_batch(self, batch: *mut self::cass_internal_api::CassBatch) -> *mut self::cass_internal_api::CassFuture {unsafe{
+    cass_internal_api::cass_session_execute_batch(self.cass_session,batch)
   }}
 }

@@ -24,6 +24,7 @@ use self::cass_internal_api::CassIterator;
 
 use self::libc::c_char;
 
+#[allow(dead_code)]
 pub fn string_init(null_terminated: CString) -> CassString {unsafe{
   cass_internal_api::cass_string_init(null_terminated .as_ptr() as *const i8)
 }}
