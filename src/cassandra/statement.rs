@@ -53,7 +53,7 @@ impl CassStatement {
     cass_internal_api::cass_statement_bind_double(self.cass_statement,index,value)
   }}
 
-  pub fn _bind_bool(&mut self, index: cass_size_t, value: cass_bool_t) -> CassError {unsafe{
+  pub fn bind_bool(&mut self, index: cass_size_t, value: cass_bool_t) -> CassError {unsafe{
     cass_internal_api::cass_statement_bind_bool(self.cass_statement,index,value)
   }}
 

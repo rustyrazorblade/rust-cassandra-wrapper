@@ -46,9 +46,9 @@ pub fn create_cluster99() -> cass_internal_api::CassCluster {unsafe{
 }}
 
 pub fn execute_query(session:CassSession, query:CString) -> CassError {unsafe{
-  let initted_string = cassandra::types::string_init(query);
+  let initted_string = CassValue::string_init(query);
   let statement:CassStatement = CassStatement{cass_statement:
-          cass_internal_api::cass_statement_new(initted_string, 0, cass_internal_api::CASS_CONSISTENCY_ONE)
+          cass_internal_api::cass_statement_new(*initted_string.cass_string, 0, cass_internal_api::CASS_CONSISTENCY_ONE)
   };
   let future:CassFuture = CassFuture{cass_future:session.execute(statement).cass_future};
   cass_internal_api::cass_future_wait(future.cass_future);
@@ -66,22 +66,22 @@ pub fn execute_query(session:CassSession, query:CString) -> CassError {unsafe{
 
 pub fn insert_into_basic(session:CassSession, key:String, basic:Basic) -> cass_internal_api::CassError {unsafe{
   let rawString = "INSERT INTO examples.basic (key, bln, flt, dbl, i32, i64) VALUES (?, ?, ?, ?, ?, ?);";
-  let query:cass_internal_api::CassString = cass_internal_api::cass_string_init(rawString.as_ptr() as *const i8);
-  let statement = CassStatement{cass_statement:cass_internal_api::cass_statement_new(query, 6, cass_internal_api::CASS_CONSISTENCY_ONE)};
-  cass_internal_api::cass_statement_bind_string(statement.cass_statement, 0, cass_internal_api::cass_string_init(key.to_c_str().as_ptr() as *const i8));
-  cass_internal_api::cass_statement_bind_bool(statement.cass_statement, 1, basic.bln as u32);
-  cass_internal_api::cass_statement_bind_float(statement.cass_statement, 2, *basic.flt);
-  cass_internal_api::cass_statement_bind_double(statement.cass_statement, 3, *basic.dbl);
-  cass_internal_api::cass_statement_bind_int32(statement.cass_statement, 4, *basic.i32);
-  cass_internal_api::cass_statement_bind_int64(statement.cass_statement, 5, *basic.i64);
+  let query:cass_internal_api::CassString = *CassValue::string_init(rawString.to_string().to_c_str()).cass_string;
+  let mut statement = CassStatement{cass_statement:cass_internal_api::cass_statement_new(query, 6, cass_internal_api::CASS_CONSISTENCY_ONE)};
+  statement.bind_string(0, cass_internal_api::cass_string_init(key.to_c_str().as_ptr() as *const i8));
+  statement.bind_bool(1, basic.bln as u32);
+  statement.bind_float(2, *basic.flt);
+  statement.bind_double(3, *basic.dbl);
+  statement.bind_int32(4, *basic.i32);
+  statement.bind_int64(5, *basic.i64);
   let future:CassFuture = session.execute(statement);
-  cass_internal_api::cass_future_wait(future.cass_future);
+  future.wait();
   let rc:cass_internal_api::CassError = cass_internal_api::cass_future_error_code(future.cass_future);
   if rc != cassandra::error::CASS_OK {
-    //print_error(future);
+    print_error(future);
   }
-  cass_internal_api::cass_future_free(future.cass_future);
-  cass_internal_api::cass_statement_free(statement.cass_statement);
+  future.free();
+  statement.free();
   return rc;
 }}
 
