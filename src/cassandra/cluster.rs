@@ -1,6 +1,7 @@
 extern crate cass_internal_api;
 extern crate libc;
 
+use std::c_str::CString;
 
 use self::libc::c_void;
 use self::libc::c_char;
@@ -8,11 +9,9 @@ use self::cass_internal_api::CassOption;
 use self::cass_internal_api::cass_size_t;
 use self::cass_internal_api::CassError;
 
-use self::cassandra::future;
+use cassandra::future;
 
-mod cassandra {
-  #[path="../future.rs"] pub mod future;
-}
+
 
 
 pub static CASS_OPTION_CONTACT_POINTS:u32 = self::cass_internal_api::CASS_OPTION_CONTACT_POINTS;
@@ -31,9 +30,9 @@ impl<'a> CassCluster<'a> {
     CassCluster{cass_cluster:cass_internal_api::cass_cluster_new()}
   }}
 
-     pub fn setopt(&mut self, option: CassOption, data: *const c_void, data_length: cass_size_t) -> CassError {unsafe{
-        cass_internal_api::cass_cluster_setopt( (self.cass_cluster),option,data,data_length)
-     }}
+  pub fn setopt(&mut self, option: CassOption, data: CString) -> CassError {unsafe{
+    cass_internal_api::cass_cluster_setopt( self.cass_cluster,option,data.as_ptr() as *const libc::c_void,data.len() as u64)
+  }}
 
   pub fn getopt(&mut self, option: CassOption, data: *mut c_void, data_length: *mut cass_size_t) -> CassError {unsafe{
     cass_internal_api::cass_cluster_getopt(&(*(self).cass_cluster),option,data,data_length)

@@ -12,7 +12,6 @@ use cassandra::types::*;
 use cassandra::error::*;
 use std::c_str::CString;
 
-
 use cassandra::iterator::CassIterator;
 use cassandra::row::CassRow;
 use cassandra::result::CassResult;
@@ -20,17 +19,15 @@ use cassandra::result::CassResult;
 use cassandra::cluster::CASS_OPTION_CONTACT_POINTS;
 use cassandra::consistency::CASS_CONSISTENCY_ONE;
 
-
-#[path = "../cassandra/mod.rs"] mod cassandra
-{
-#[path="../statement.rs"] pub mod statement;
-#[path="../consistency.rs"] pub mod consistency;
-#[path="../iterator.rs"] pub mod iterator;
-#[path="../collection.rs"] pub mod collection;
+#[path = "../cassandra/mod.rs"] mod cassandra {
+  #[path="../statement.rs"] pub mod statement;
+  #[path="../consistency.rs"] pub mod consistency;
+  #[path="../iterator.rs"] pub mod iterator;
+  #[path="../collection.rs"] pub mod collection;
   #[path="../types.rs"] pub mod types;
-#[path="../cluster.rs"] pub mod cluster;
-#[path="../result.rs"] pub mod result;
-#[path="../row.rs"] pub mod row;
+  #[path="../cluster.rs"] pub mod cluster;
+  #[path="../result.rs"] pub mod result;
+  #[path="../row.rs"] pub mod row;
   #[path="../future.rs"] pub mod future;
   #[path="../error.rs"] pub mod error;
   #[path="../session.rs"] pub mod session;
@@ -45,23 +42,23 @@ pub struct Basic {
 }
 
 fn print_error(future:CassFuture) {
-  let message = future.error_message();
-//println!("Error: {}", message.cass_string);//FIXME stderr
+  println!("Error: {}", future);
 }
 
-pub fn create_cluster99() -> CassCluster {unsafe{
+#[allow(visible_private_types)]
+pub fn create_cluster99() -> CassCluster {
   let contact_points = ["127.0.0.1".to_string()];
-  let cluster = CassCluster::new();
+  let mut cluster = CassCluster::new();
   for contact_point in contact_points.iter() {
     let cpoint = contact_point.to_c_str();
-    cass_internal_api::cass_cluster_setopt( cluster.cass_cluster, CASS_OPTION_CONTACT_POINTS, cpoint.as_ptr() as *const libc::c_void,cpoint.len() as  u64);
+    cluster.setopt( CASS_OPTION_CONTACT_POINTS, cpoint);
   }
-  CassCluster{cass_cluster:cluster.cass_cluster}
-}}
+  cluster
+}
 
 pub fn execute_query(session:CassSession, query:CString) -> CassError {
-  let initted_string = CassValue::string_init(query);
-  let statement:CassStatement = CassStatement::new(initted_string, 0, CASS_CONSISTENCY_ONE);
+  let inited_string = CassValue::string_init(query);
+  let statement = CassStatement::new(inited_string, 0, CASS_CONSISTENCY_ONE);
   let future:CassFuture = CassFuture{cass_future:session.execute(statement).cass_future};
   future.wait();
   let rc = future.error_code();
@@ -75,7 +72,7 @@ pub fn execute_query(session:CassSession, query:CString) -> CassError {
 
 pub fn insert_into_basic(session:CassSession, key:String, basic:Basic) -> CassError {
   let rawString = "INSERT INTO examples.basic (key, bln, flt, dbl, i32, i64) VALUES (?, ?, ?, ?, ?, ?);";
-  let query:CassString = CassValue::string_init(rawString.to_string().to_c_str());
+  let query = CassValue::string_init(rawString.to_string().to_c_str());
   let mut statement = CassStatement::new(query, 6, CASS_CONSISTENCY_ONE);
   statement.bind_string(0, CassValue::string_init(key.to_c_str()));
   statement.bind_bool(1, basic.bln as u32);
@@ -83,9 +80,9 @@ pub fn insert_into_basic(session:CassSession, key:String, basic:Basic) -> CassEr
   statement.bind_double(3, basic.dbl);
   statement.bind_int32(4, basic.i32);
   statement.bind_int64(5, basic.i64);
-  let future:CassFuture = session.execute(statement);
+  let future = session.execute(statement);
   future.wait();
-  let rc:CassError = future.error_code();
+  let rc = future.error_code();
   if rc.cass_error != cassandra::error::CASS_OK {
    print_error(future);
   }
@@ -94,10 +91,10 @@ pub fn insert_into_basic(session:CassSession, key:String, basic:Basic) -> CassEr
   return rc;
 }
 
-pub fn select_from_basic(session:CassSession, key:String, basic:Basic) -> CassError {unsafe{
+pub fn select_from_basic(session:CassSession, key:String, basic:Basic) -> CassError {
   let rawString = "SELECT * FROM examples.basic WHERE key = ?;";
   let query = CassValue::string_init(rawString.to_c_str());
-  let mut statement = CassStatement::new(query, 1, cass_internal_api::CASS_CONSISTENCY_ONE);
+  let mut statement = CassStatement::new(query, 1, CASS_CONSISTENCY_ONE);
   statement.bind_string(0, CassValue::string_init(key.to_c_str()));
   let future = session.execute(statement);
   future.wait();
@@ -122,28 +119,28 @@ pub fn select_from_basic(session:CassSession, key:String, basic:Basic) -> CassEr
   future.free();
   statement.free();
   return rc;
-}}
+}
 
-pub fn create_cluster() -> CassCluster {unsafe{
+pub fn create_cluster() -> CassCluster {
   let contact_points = ["127.0.0.1"];
-  let cluster:*mut cass_internal_api::CassCluster = cass_internal_api::cass_cluster_new();
+  let mut cluster:CassCluster = CassCluster::new();
   for contact_point in contact_points.iter() {
     let  c:&'static str=*contact_point;
     let cstr=c.to_c_str();
-    cass_internal_api::cass_cluster_setopt( cluster, cass_internal_api::CASS_OPTION_CONTACT_POINTS,  cstr.as_ptr() as *const libc::c_void, cstr.len() as  u64);
+    cluster.setopt( CASS_OPTION_CONTACT_POINTS, cstr);
   }
-  return CassCluster{cass_cluster:cluster}
-}}
+  cluster
+}
 
-pub fn connect_session(cluster_:CassCluster)-> (CassError,CassSession) {unsafe{
-  let future: CassFuture = CassFuture{cass_future:cass_internal_api::cass_cluster_connect(cluster_.cass_cluster)};
+pub fn connect_session(mut cluster:CassCluster) -> (CassError,CassSession) {
+  let future: CassFuture = cluster.connect();
   future.wait();
   let rc = future.error_code();
-  let session = CassSession{cass_session:cass_internal_api::cass_future_get_session(future.cass_future)};
+  let session = future.get_session();
 
   future.free();
   return (rc,session);
-}}
+}
 
 fn main()  {
   let cluster = create_cluster();
@@ -153,8 +150,8 @@ fn main()  {
 
   let (rc,session) = connect_session(cluster);
   if rc.cass_error != cass_internal_api::CASS_OK {
-    // println!("rc={}",rc);
-    return
+    println!("rc={}",rc.cass_error);
+  return
   }
 
   insert_into_basic(session, "test2".to_string(), input);
@@ -165,5 +162,5 @@ fn main()  {
   assert!(input.i32 == output.i32);
   assert!(input.i64 == output.i64);
   assert!(input.bln == output.bln);
-  //println!("select and insert matched");
+  println!("select and insert matched");
 }

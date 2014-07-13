@@ -14,8 +14,8 @@ pub struct CassRow {
 }
 
 impl CassRow {
-  pub fn cass_iterator_from_row(row: CassRow) -> CassIterator {unsafe{
-    CassIterator{cass_iterator:cass_internal_api::cass_iterator_from_row(&row.cass_row)}
+  pub fn iterator(self) -> CassIterator {unsafe{
+    CassIterator{cass_iterator:cass_internal_api::cass_iterator_from_row(&self.cass_row)}
   }}
 
   pub fn get_column(self, index: u64) -> CassValue {unsafe{

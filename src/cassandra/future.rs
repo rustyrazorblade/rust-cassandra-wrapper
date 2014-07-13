@@ -22,9 +22,12 @@ mod cassandra {
 }
 
 #[allow(dead_code)]
+#[deriving(Show)]
 pub struct CassFuture {
   pub cass_future:*mut  self::cass_internal_api::Struct_CassFuture_
 }
+
+
 
 #[allow(dead_code)]
 impl CassFuture {
@@ -44,7 +47,7 @@ impl CassFuture {
     cass_internal_api::cass_future_wait_timed((self).cass_future,timeout)
   }}
 
-  pub fn session(self) -> CassSession {unsafe{
+  pub fn get_session(self) -> CassSession {unsafe{
     CassSession{cass_session:cass_internal_api::cass_future_get_session(self.cass_future)}
   }}
 
