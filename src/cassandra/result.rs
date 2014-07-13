@@ -11,12 +11,15 @@ pub struct CassResult {
   pub cass_result:self::cass_internal_api::CassResult
 }
 
-#[allow(dead_code)]
-impl CassResult {
-  pub fn free(self) {unsafe{
+impl Drop for CassResult {
+  fn drop(&mut self) {unsafe{
+    println!("free my result");
     cass_internal_api::cass_result_free(&self.cass_result)
   }}
+}
 
+#[allow(dead_code)]
+impl CassResult {
   pub fn row_count(&self) -> cass_size_t {unsafe{
     cass_internal_api::cass_result_row_count(&(*self).cass_result)
   }}

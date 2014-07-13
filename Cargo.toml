@@ -8,10 +8,6 @@ name="basic"
 path="src/bin/basic.rs"
 
 [[bin]]
-name="basic2"
-path="src/bin/basic2.rs"
-
-[[bin]]
 name="main"
 path="src/bin/main.rs"
 

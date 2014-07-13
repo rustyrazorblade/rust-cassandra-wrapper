@@ -31,6 +31,13 @@ pub struct CassStatement {
   pub cass_statement:*mut cass_internal_api::CassStatement
 }
 
+impl Drop for CassStatement {
+  fn drop(&mut self) {unsafe{
+    println!("free my statement");
+    cass_internal_api::cass_statement_free(self.cass_statement)
+  }}
+}
+
 #[allow(dead_code)]
 impl CassStatement {
   pub fn new(statement_string:CassString, parameter_count: cass_size_t, consistency: CASS_CONSISTENCY) -> CassStatement {unsafe{
@@ -38,19 +45,15 @@ impl CassStatement {
     statement
   }}
 
-  pub fn free(self) {unsafe{
-    cass_internal_api::cass_statement_free(self.cass_statement)
-    }}
-
-  pub fn bind_null(self, index: cass_size_t) -> CassError {unsafe{
+  pub fn bind_null(&mut self, index: cass_size_t) -> CassError {unsafe{
     CassError{cass_error:cass_internal_api::cass_statement_bind_null(self.cass_statement,index)}
   }}
 
-  pub fn bind_int32(self, index: cass_size_t, value: cass_int32_t) -> CassError {unsafe{
+  pub fn bind_int32(&mut self, index: cass_size_t, value: cass_int32_t) -> CassError {unsafe{
     CassError{cass_error:cass_internal_api::cass_statement_bind_int32(self.cass_statement,index,value)}
   }}
 
-  pub fn bind_int64(self, index: cass_size_t, value: cass_int64_t) -> CassError {unsafe{
+  pub fn bind_int64(&mut self, index: cass_size_t, value: cass_int64_t) -> CassError {unsafe{
     CassError{cass_error:cass_internal_api::cass_statement_bind_int64(self.cass_statement,index,value)}
   }}
 

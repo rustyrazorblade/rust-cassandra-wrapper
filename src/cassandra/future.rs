@@ -28,42 +28,46 @@ pub struct CassFuture {
 }
 
 
+impl Drop for CassFuture {
+  fn drop(&mut self) {unsafe{
+      println!("free my future");
+      self::cass_internal_api::cass_future_free((self).cass_future)
+  }
+}}
 
 #[allow(dead_code)]
 impl CassFuture {
-  pub fn free(self) {unsafe{
-    self::cass_internal_api::cass_future_free((self).cass_future)
-  }}
 
-  pub fn ready(self) -> cass_bool_t {unsafe{
+
+  pub fn ready(&mut self) -> cass_bool_t {unsafe{
     cass_internal_api::cass_future_ready((self).cass_future)
   }}
 
-  pub fn wait(self) {unsafe{
-    cass_internal_api::cass_future_wait((self).cass_future)
+  pub fn wait(&mut self) {unsafe{
+    cass_internal_api::cass_future_wait(self.cass_future)
   }}
 
-  pub fn timed(self, timeout: cass_duration_t) -> cass_bool_t {unsafe{
+  pub fn timed(&mut self, timeout: cass_duration_t) -> cass_bool_t {unsafe{
     cass_internal_api::cass_future_wait_timed((self).cass_future,timeout)
   }}
 
-  pub fn get_session(self) -> CassSession {unsafe{
+  pub fn get_session(&mut self) -> CassSession {unsafe{
     CassSession{cass_session:cass_internal_api::cass_future_get_session(self.cass_future)}
   }}
 
-  pub fn get_result(self) -> CassResult {unsafe{
+  pub fn get_result(&mut self) -> CassResult {unsafe{
     CassResult{cass_result:*cass_internal_api::cass_future_get_result(self.cass_future)}
   }}
 
-  pub fn get_prepared(self) -> CassPrepared {unsafe{
+  pub fn get_prepared(&mut self) -> CassPrepared {unsafe{
     CassPrepared{cass_prepared:*cass_internal_api::cass_future_get_prepared(self.cass_future)}
   }}
 
-  pub fn error_code(self) -> CassError {unsafe{
+  pub fn error_code(&mut self) -> CassError {unsafe{
     CassError{cass_error:cass_internal_api::cass_future_error_code(self.cass_future)}
   }}
 
-  pub fn error_message(self) -> CassString {unsafe{
+  pub fn error_message(&mut self) -> CassString {unsafe{
     CassString{cass_string:cass_internal_api::cass_future_error_message( self.cass_future)}
   }}
 }

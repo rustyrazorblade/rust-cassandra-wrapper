@@ -41,33 +41,21 @@ pub struct Basic {
   pub i64: i64
 }
 
-fn print_error(future:CassFuture) {
+fn print_error(future:&mut CassFuture) {
   println!("Error: {}", future);
 }
 
-#[allow(visible_private_types)]
-pub fn create_cluster99() -> CassCluster {
-  let contact_points = ["127.0.0.1".to_string()];
-  let mut cluster = CassCluster::new();
-  for contact_point in contact_points.iter() {
-    let cpoint = contact_point.to_c_str();
-    cluster.setopt( CASS_OPTION_CONTACT_POINTS, cpoint);
-  }
-  cluster
-}
 
 pub fn execute_query(session:CassSession, query:CString) -> CassError {
   let inited_string = CassValue::string_init(query);
-  let statement = CassStatement::new(inited_string, 0, CASS_CONSISTENCY_ONE);
-  let future:CassFuture = CassFuture{cass_future:session.execute(statement).cass_future};
+  let mut statement = CassStatement::new(inited_string, 0, CASS_CONSISTENCY_ONE);
+  let mut future:&mut CassFuture = &mut CassFuture{cass_future:session.execute(statement).cass_future};
   future.wait();
   let rc = future.error_code();
   if rc.cass_error != cassandra::error::CASS_OK {
     print_error(future);
   }
-  future.free();
-  statement.free();
-  return rc;
+  return future.error_code();
 }
 
 pub fn insert_into_basic(session:CassSession, key:String, basic:Basic) -> CassError {
@@ -80,14 +68,12 @@ pub fn insert_into_basic(session:CassSession, key:String, basic:Basic) -> CassEr
   statement.bind_double(3, basic.dbl);
   statement.bind_int32(4, basic.i32);
   statement.bind_int64(5, basic.i64);
-  let future = session.execute(statement);
+  let mut future = &mut session.execute(statement);
   future.wait();
   let rc = future.error_code();
   if rc.cass_error != cassandra::error::CASS_OK {
    print_error(future);
   }
-  future.free();
-  statement.free();
   return rc;
 }
 
@@ -96,15 +82,15 @@ pub fn select_from_basic(session:CassSession, key:String, basic:Basic) -> CassEr
   let query = CassValue::string_init(rawString.to_c_str());
   let mut statement = CassStatement::new(query, 1, CASS_CONSISTENCY_ONE);
   statement.bind_string(0, CassValue::string_init(key.to_c_str()));
-  let future = session.execute(statement);
+  let mut future = session.execute(statement);
   future.wait();
   let rc = future.error_code();
   if rc.cass_error != CASS_OK {
-    print_error(future);
+    print_error(&mut future);
     return rc;
   } else {
       let result = future.get_result();
-      let iterator = CassIterator{cass_iterator:result.iterator()};
+      let mut iterator = &mut CassIterator{cass_iterator:result.iterator()};
       if iterator.next() {
         let row: CassRow = iterator.get_row();
         row.get_column(1).get_bool(if basic.bln {1} else {0});
@@ -113,39 +99,33 @@ pub fn select_from_basic(session:CassSession, key:String, basic:Basic) -> CassEr
         row.get_column(4).get_int32( basic.i32);
         row.get_column(5).get_int64( basic.i64);
      }
-   result.free();
-   iterator.free();
  }
-  future.free();
-  statement.free();
   return rc;
 }
 
 pub fn create_cluster() -> CassCluster {
-  let contact_points = ["127.0.0.1"];
-  let mut cluster:CassCluster = CassCluster::new();
+  let contact_points = ["127.0.0.1".to_string()];
+  let mut cluster = CassCluster::new();
   for contact_point in contact_points.iter() {
-    let  c:&'static str=*contact_point;
-    let cstr=c.to_c_str();
-    cluster.setopt( CASS_OPTION_CONTACT_POINTS, cstr);
+    let cpoint = contact_point.to_c_str();
+    cluster.setopt(CASS_OPTION_CONTACT_POINTS, cpoint);
   }
   cluster
 }
 
 pub fn connect_session(mut cluster:CassCluster) -> (CassError,CassSession) {
-  let future: CassFuture = cluster.connect();
+  let mut future: CassFuture = cluster.connect();
   future.wait();
   let rc = future.error_code();
   let session = future.get_session();
 
-  future.free();
   return (rc,session);
 }
 
 fn main()  {
   let cluster = create_cluster();
 
-  let input:Basic = Basic{bln:cass_internal_api::cass_false > 0, dbl:0.001f64, flt:0.0002f32, i32:1, i64:2 };
+  let input:Basic = Basic{bln:false, dbl:0.001f64, flt:0.0002f32, i32:1, i64:2 };
   let output:Basic=  Basic{bln:false, dbl:0.0f64,flt:0.0f32, i32:0, i64:0};
 
   let (rc,session) = connect_session(cluster);
