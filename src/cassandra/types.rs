@@ -88,7 +88,7 @@ pub struct CassInt64Type {
 #[allow(dead_code)]
 impl CassValue {
   pub fn string_init(null_terminated: CString) -> CassString {unsafe{
-    CassString{cass_string:cass_internal_api::cass_string_init(null_terminated.as_ptr() as *const i8)}
+    CassString{cass_string:cass_internal_api::cass_string_init(null_terminated.as_ptr())}
   }}
 
   pub fn get_int32(self,mut output: cass_int32_t) -> CassError {unsafe{

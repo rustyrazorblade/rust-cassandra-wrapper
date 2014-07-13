@@ -11,15 +11,10 @@ use self::cass_internal_api::CassError;
 
 use cassandra::future;
 
-
-
-
 pub static CASS_OPTION_CONTACT_POINTS:u32 = self::cass_internal_api::CASS_OPTION_CONTACT_POINTS;
-
 
 #[allow(dead_code)]
 pub struct CassCluster<'a> {
-
   pub cass_cluster:*mut cass_internal_api::CassCluster
 }
 
@@ -30,7 +25,7 @@ impl<'a> CassCluster<'a> {
     CassCluster{cass_cluster:cass_internal_api::cass_cluster_new()}
   }}
 
-  pub fn setopt(&mut self, option: CassOption, data: CString) -> CassError {unsafe{
+  pub fn setopt(&mut self, option: CassOption, data: &CString) -> CassError {unsafe{
     cass_internal_api::cass_cluster_setopt( self.cass_cluster,option,data.as_ptr() as *const libc::c_void,data.len() as u64)
   }}
 

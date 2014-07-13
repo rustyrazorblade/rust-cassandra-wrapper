@@ -22,6 +22,10 @@ impl CassSession {
     cass_internal_api::cass_session_close(self.cass_session)
   }}
 
+  pub fn new(self, statement: self::cass_internal_api::CassString) -> *mut self::cass_internal_api::CassFuture {unsafe{
+    cass_internal_api::cass_session_prepare(self.cass_session,statement)
+  }}
+
   pub fn prepare(self, statement: self::cass_internal_api::CassString) -> *mut self::cass_internal_api::CassFuture {unsafe{
     cass_internal_api::cass_session_prepare(self.cass_session,statement)
   }}

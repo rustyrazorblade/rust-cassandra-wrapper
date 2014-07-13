@@ -39,7 +39,7 @@ impl Drop for CassFuture {
 impl CassFuture {
 
 
-  pub fn ready(&mut self) -> cass_bool_t {unsafe{
+  pub fn ready(&self) -> cass_bool_t {unsafe{
     cass_internal_api::cass_future_ready((self).cass_future)
   }}
 
@@ -56,7 +56,7 @@ impl CassFuture {
   }}
 
   pub fn get_result(&mut self) -> CassResult {unsafe{
-    CassResult{cass_result:*cass_internal_api::cass_future_get_result(self.cass_future)}
+    CassResult{cass_result:cass_internal_api::cass_future_get_result(self.cass_future)}
   }}
 
   pub fn get_prepared(&mut self) -> CassPrepared {unsafe{

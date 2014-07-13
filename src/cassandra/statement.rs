@@ -26,9 +26,20 @@ use cassandra::types::CassBytes;
 use cassandra::types::CassString;
 use cassandra::consistency::CASS_CONSISTENCY;
 
+use std::fmt::Show;
+use std::fmt::Formatter;
+use std::fmt::Result;
+
 #[allow(dead_code)]
+
 pub struct CassStatement {
   pub cass_statement:*mut cass_internal_api::CassStatement
+}
+
+impl Show for CassStatement {
+   fn fmt(&self, f: &mut Formatter) -> Result {
+     write!(f, "{}", self.cass_statement)
+    }
 }
 
 impl Drop for CassStatement {

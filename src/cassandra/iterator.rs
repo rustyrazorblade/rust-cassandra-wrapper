@@ -22,7 +22,7 @@ impl CassIterator {
     cass_internal_api::cass_iterator_next(self.cass_iterator) > 0
   }}
 
-  pub fn get_row(&mut self) -> CassRow {unsafe{
+  pub fn get_row(self) -> CassRow {unsafe{
     let row = cass_internal_api::cass_iterator_get_row(self.cass_iterator);
     CassRow{cass_row:*row}
   }}
