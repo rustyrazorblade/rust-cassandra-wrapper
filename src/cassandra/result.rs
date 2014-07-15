@@ -6,9 +6,16 @@ use self::cass_internal_api::CassRow;
 use self::cass_internal_api::CassString;
 use self::cass_internal_api::CassIterator;
 
+use std::fmt::Show;
+use std::fmt::Formatter;
+use std::fmt;
+
+use std::kinds::marker::NoCopy;
+
 #[allow(dead_code)]
 pub struct CassResult {
-  pub cass_result:*const self::cass_internal_api::CassResult
+  pub cass_result:*const self::cass_internal_api::CassResult,
+  pub nocopy:NoCopy
 }
 
 impl Drop for CassResult {
@@ -16,6 +23,12 @@ impl Drop for CassResult {
     println!("free my result");
     cass_internal_api::cass_result_free(self.cass_result)
   }}
+}
+
+impl Show for CassResult {
+   fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+     write!(f, "(Result:{})", self.cass_result)
+    }
 }
 
 #[allow(dead_code)]

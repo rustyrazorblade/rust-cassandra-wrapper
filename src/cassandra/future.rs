@@ -17,14 +17,16 @@ use cassandra::result::CassResult;
 use cassandra::statement::CassPrepared;
 use cassandra::types::CassString;
 
+use std::kinds::marker::NoCopy;
+
 mod cassandra {
 #[path="../error.rs"] pub mod error;
 }
 
 #[allow(dead_code)]
-#[deriving(Show)]
 pub struct CassFuture {
-  pub cass_future:*mut  self::cass_internal_api::Struct_CassFuture_
+  pub cass_future:*mut  self::cass_internal_api::Struct_CassFuture_,
+  pub nocopy:NoCopy
 }
 
 
@@ -40,7 +42,7 @@ impl CassFuture {
 
 
   pub fn ready(&self) -> cass_bool_t {unsafe{
-    cass_internal_api::cass_future_ready((self).cass_future)
+    cass_internal_api::cass_future_ready(self.cass_future)
   }}
 
   pub fn wait(&mut self) {unsafe{
@@ -48,26 +50,31 @@ impl CassFuture {
   }}
 
   pub fn timed(&mut self, timeout: cass_duration_t) -> cass_bool_t {unsafe{
-    cass_internal_api::cass_future_wait_timed((self).cass_future,timeout)
+    cass_internal_api::cass_future_wait_timed(self.cass_future,timeout)
   }}
 
   pub fn get_session(&mut self) -> CassSession {unsafe{
-    CassSession{cass_session:cass_internal_api::cass_future_get_session(self.cass_future)}
+    CassSession{cass_session:cass_internal_api::cass_future_get_session(self.cass_future),nocopy:NoCopy}
   }}
 
   pub fn get_result(&mut self) -> CassResult {unsafe{
-    CassResult{cass_result:cass_internal_api::cass_future_get_result(self.cass_future)}
+    CassResult{cass_result:cass_internal_api::cass_future_get_result(self.cass_future),nocopy:NoCopy}
   }}
 
   pub fn get_prepared(&mut self) -> CassPrepared {unsafe{
-    CassPrepared{cass_prepared:*cass_internal_api::cass_future_get_prepared(self.cass_future)}
+    CassPrepared{cass_prepared:*cass_internal_api::cass_future_get_prepared(self.cass_future),nocopy:NoCopy}
   }}
 
   pub fn error_code(&mut self) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_future_error_code(self.cass_future)}
+    CassError{cass_error:cass_internal_api::cass_future_error_code(self.cass_future),nocopy:NoCopy}
   }}
 
   pub fn error_message(&mut self) -> CassString {unsafe{
-    CassString{cass_string:cass_internal_api::cass_future_error_message( self.cass_future)}
+    let ref mut msg = cass_internal_api::cass_future_error_message(self.cass_future);
+    CassString{cass_string:msg,nocopy:NoCopy}
   }}
+
+  pub fn print_error(&mut self) {
+    println!("Error: {}", "self");
+  }
 }

@@ -21,3 +21,6 @@ path = "src/cassandra/mod.rs"
 
 [dependencies.rust-cassandra-internal-api]
 git = "https://github.com/tupshin/rust-cassandra-internal-api"
+
+[dependencies.hoare]
+git = "https://github.com/tupshin/libhoare"

@@ -4,6 +4,8 @@ extern crate cass_internal_api;
 use cassandra::row::CassRow;
 use cassandra::types::CassValue;
 
+use std::kinds::marker::NoCopy;
+
 impl Drop for CassIterator {
   fn drop(&mut self) {unsafe{
     println!("free my iterator");
@@ -13,7 +15,8 @@ impl Drop for CassIterator {
 
 #[allow(dead_code)]
 pub struct CassIterator {
-  pub cass_iterator:*mut self::cass_internal_api::CassIterator
+  pub cass_iterator:*mut self::cass_internal_api::CassIterator,
+  pub nocopy:NoCopy
 }
 
 #[allow(dead_code)]
@@ -24,14 +27,15 @@ impl CassIterator {
 
   pub fn get_row(self) -> CassRow {unsafe{
     let row = cass_internal_api::cass_iterator_get_row(self.cass_iterator);
-    CassRow{cass_row:*row}
+
+    CassRow{cass_row:row,nocopy:NoCopy}
   }}
 
   pub fn get_column(self) -> CassValue {unsafe{
-    CassValue{cass_value:cass_internal_api::cass_iterator_get_column(self.cass_iterator)}
+    CassValue{cass_value:cass_internal_api::cass_iterator_get_column(self.cass_iterator),nocopy:NoCopy}
   }}
 
   pub fn get_value(self) -> CassValue {unsafe{
-    CassValue{cass_value:cass_internal_api::cass_iterator_get_value(self.cass_iterator)}
+    CassValue{cass_value:cass_internal_api::cass_iterator_get_value(self.cass_iterator),nocopy:NoCopy}
   }}
 }

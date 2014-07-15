@@ -12,6 +12,8 @@ use cassandra::types::*;
 use cassandra::error::*;
 use std::c_str::CString;
 
+//use syntax::ext::trace_macros;
+
 use cass_internal_api::cass_bool_t;
 
 use cassandra::iterator::CassIterator;
@@ -21,6 +23,8 @@ use cassandra::result::CassResult;
 
 use cassandra::cluster::CASS_OPTION_CONTACT_POINTS;
 use cassandra::consistency::CASS_CONSISTENCY_ONE;
+
+use std::kinds::marker::NoCopy;
 
 #[path = "../cassandra/mod.rs"] mod cassandra {
   #[path="../statement.rs"] pub mod statement;
@@ -36,6 +40,7 @@ use cassandra::consistency::CASS_CONSISTENCY_ONE;
   #[path="../session.rs"] pub mod session;
 }
 
+#[deriving(Show, Clone)]
 pub struct Basic {
   pub bln: bool,
   pub flt: f32,
@@ -44,79 +49,55 @@ pub struct Basic {
   pub i64: i64
 }
 
-fn print_error(future:&mut CassFuture) {
-  println!("Error: {}", future);
-}
 
 
-pub fn execute_query(session:CassSession, query:CString) -> CassError {
-  let inited_string = CassValue::string_init(query);
-  let mut statement = CassStatement::new(inited_string, 0, CASS_CONSISTENCY_ONE);
-  let mut future:&mut CassFuture = &mut CassFuture{cass_future:session.execute(statement).cass_future};
-  future.wait();
-  let rc = future.error_code();
-  if rc.cass_error != cassandra::error::CASS_OK {
-    print_error(future);
-  }
-  return future.error_code();
-}
+pub fn insert_into_basic(session:&CassSession, key:String, basic:Basic) -> Result<CassResult,CassError> {unsafe{
 
-pub fn insert_into_basic(session:CassSession, key:String, basic:Basic) -> CassError {unsafe{
+  let query_string = "INSERT INTO examples.basic (key, bln, flt, dbl, i32, i64) VALUES (?, ?, ?, ?, ?, ?);".to_string();
+  let statement = &mut CassStatement::build_from_string(query_string, 6, CASS_CONSISTENCY_ONE);
 
-  let query_string = "INSERT INTO examples.basic (key, bln, flt, dbl, i32, i64) VALUES (?, ?, ?, ?, ?, ?);";
-  let query_cstring = query_string.to_c_str();
-  let query:CassString = CassString{cass_string:cass_internal_api::cass_string_init(query_cstring.as_ptr())};
-
-  let mut statement = CassStatement::new(query, 6, CASS_CONSISTENCY_ONE);
   statement.bind_string(0, CassValue::string_init(key.to_c_str()));
   statement.bind_bool(1, basic.bln as u32);
   statement.bind_float(2, basic.flt);
   statement.bind_double(3, basic.dbl);
   statement.bind_int32(4, basic.i32);
   statement.bind_int64(5, basic.i64);
-  let mut future = &mut session.execute(statement);
-  future.wait();
-  let rc = future.error_code();
-  if rc.cass_error != cassandra::error::CASS_OK {
-   print_error(future);
-  }
-  return rc;
+
+  session.execute(statement)
 }}
 
-pub fn select_from_basic(session:CassSession, key:String, basic:Basic) -> CassError {unsafe{
-  let query_string = "SELECT * FROM examples.basic WHERE key = ?;";
-  let query:CassString = CassValue::string_init(query_string.to_c_str());
+pub fn do_it_broken(query_cstring:CString) -> CassString {unsafe{
+  let my_ptr = query_cstring.as_ptr();
+  let ref mut inited = cass_internal_api::cass_string_init(my_ptr);
+  return  CassString{cass_string:inited,nocopy:NoCopy};
+}}
 
-  let mut statement = CassStatement::new(query, 6, CASS_CONSISTENCY_ONE);
+pub fn do_it(my_ptr:*const i8) -> CassString {unsafe{
+  let ref mut inited = cass_internal_api::cass_string_init(my_ptr);
+  return  CassString{cass_string:inited,nocopy:NoCopy};
+}}
+
+pub fn select_from_basic(session:&CassSession, key:String, basic:Basic) -> Result<CassResult,CassError> {unsafe{
+  let query_string = "SELECT * FROM examples.basic WHERE key = ?;".to_string();
+
+   let statement = &mut CassStatement::build_from_string(query_string, 6, CASS_CONSISTENCY_ONE);
+
   println!("{}",key);
-  let key_str = CassValue::string_init(key.to_c_str());
-  statement.bind_string(0, key_str);
-  println!("statement:{}",statement);
-  let mut future = session.execute(statement);
-  future.wait();
-  let rc = future.error_code();
-  if rc.cass_error != CASS_OK {
-    print_error(&mut future);
-    return rc;
-  } else {
+   let key_str = CassValue::string_init(key.to_c_str());
+   statement.bind_string(0, key_str);
+   println!("statement:{}","statement");
+  let future:Result<CassResult,CassError>=session.execute(statement);
 
-    let result = future.get_result();
-    let mut iterator = CassIterator{cass_iterator:result.iterator()};
+  match (future) {
+    Err(err) => return Err(err),
+    Ok(result) => {
 
-    if iterator.next() {
-       let row:CassRow = iterator.get_row();
-       row.get_column(1).get_bool(if basic.bln {1} else {0});
-       row.get_column(2).get_double(basic.dbl);
-
-       row.get_column(3).get_float( basic.flt);
-       row.get_column(4).get_int32( basic.i32);
-       row.get_column(5).get_int64( basic.i64);
-      }
-  return rc;
-// return CassError{cass_error:0}
- }
- return CassError{cass_error:1}
+      return Ok(result)
+  }
+}
 }}
+
+
 
 pub fn create_cluster() -> CassCluster {
   let contact_points = ["127.0.0.1".to_string().to_c_str()];
@@ -127,34 +108,53 @@ pub fn create_cluster() -> CassCluster {
   cluster
 }
 
-pub fn connect_session(mut cluster:CassCluster) -> (CassError,CassSession) {
-  let mut future: CassFuture = cluster.connect();
-  future.wait();
-  let rc = future.error_code();
-  let session = future.get_session();
 
-  return (rc,session);
-}
 
 fn main()  {
   let cluster = create_cluster();
 
-  let input = Basic{bln:false, dbl:0.001f64, flt:0.0002f32, i32:1, i64:2 };
-  let output=  Basic{bln:false, dbl:0.0f64, flt:0.00f32, i32:0, i64:0};
+  let input = Basic{bln:true, dbl:0.001f64, flt:0.0002f32, i32:1, i64:2 };
+  let mut output=  Basic{bln:false, dbl:0.0f64, flt:0.00f32, i32:0, i64:0};
 
-  let (rc,session) = connect_session(cluster);
-  if rc.cass_error != cass_internal_api::CASS_OK {
-    println!("rc={}",rc.cass_error);
-  return
+  let (rc,session) = cluster.connect();
+  if rc.is_error() {
+    //println!("rc={}",rc.cass_error);
+    return
   }
 
-  insert_into_basic(session, "test".to_string(), input);
-  select_from_basic(session, "test".to_string(), output);
-  println!("Boolean check: {}--{}",input.bln,output.bln);
-  assert!(input.flt == output.flt);
-  assert!(input.dbl == output.dbl);
-  assert!(input.i32 == output.i32);
-  assert!(input.i64 == output.i64);
-  assert!(input.bln == output.bln);
-  println!("select and insert matched");
+  insert_into_basic(&session, "test".to_string(), input);
+  let response = select_from_basic(&session, "test".to_string(), output);
+
+ match response {
+  Err(FailOne) => println!("result: Failed One"),
+
+  Ok(results) => {
+    println!("result: Is OK: {}", results)
+
+//result
+let mut iterator = CassIterator{cass_iterator:results.iterator(),nocopy:NoCopy};
+    //
+     if iterator.next() {
+        let row:CassRow = iterator.get_row();
+//    row.get_column(1).get_bool(if output.bln {1} else {0});
+  match (row.get_column(1).get_bool()) {Err(err) => println!("{}--","err"),Ok(col) => output.bln=col}
+  match (row.get_column(2).get_double()) {Err(err) => println!("{}--","err"),Ok(col) => output.dbl=col}
+  match (row.get_column(3).get_float()) {Err(err) => println!("{}--","err"),Ok(col) => output.flt=col}
+  match (row.get_column(4).get_int32()) {Err(err) => println!("{}--","err"),Ok(col) => output.i32=col}
+  match (row.get_column(5).get_int64()) {Err(err) => println!("{}--","err"),Ok(col) => output.i64=col}
+       }
+}
+}
+//  return rc;
+// return CassError{cass_error:0}
+
+// return CassError{cass_error:1}
+
+  println!("input :{}",input);
+  println!("output:{}",output);
+  // assert!(input.dbl == output.dbl);
+  // assert!(input.i32 == output.i32);
+  // assert!(input.i64 == output.i64);
+  // assert!(input.bln == output.bln);
+  // println!("select and insert matched");
 }
