@@ -7,7 +7,6 @@ use self::libc::c_void;
 use self::libc::c_char;
 use self::cass_internal_api::CassOption;
 use self::cass_internal_api::cass_size_t;
-use self::cass_internal_api::CassError;
 
 use cassandra::session::CassSession;
 use cassandra::future::CassFuture;
@@ -17,19 +16,18 @@ use cassandra::future;
 
 use std::kinds::marker::NoCopy;
 
-pub static CASS_OPTION_CONTACT_POINTS:u32 = self::cass_internal_api::CASS_OPTION_CONTACT_POINTS;
+#[allow(dead_code)] pub static CASS_OPTION_CONTACT_POINTS:u32 = self::cass_internal_api::CASS_OPTION_CONTACT_POINTS;
 
 #[allow(dead_code)]
 pub struct CassCluster<'a> {
-  pub cass_cluster:*mut cass_internal_api::CassCluster,
-  nocopy:NoCopy
+  cass_cluster:*mut cass_internal_api::CassCluster
 }
 
 #[allow(dead_code)]
 impl<'a> CassCluster<'a> {
 
   pub fn new() -> CassCluster {unsafe{
-    CassCluster{cass_cluster:cass_internal_api::cass_cluster_new(),nocopy:NoCopy}
+    CassCluster{cass_cluster:cass_internal_api::cass_cluster_new()}
   }}
 
   pub fn setopt(&mut self, option: CassOption, data: &CString) -> cass_internal_api::CassError {unsafe{

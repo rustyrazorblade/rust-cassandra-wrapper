@@ -1,17 +1,10 @@
 extern crate cass_internal_api;
 
-// use self::cass_internal_api::CassSession;
-// use self::cass_internal_api::CassPrepared;
-// use self::cass_internal_api::CassResult;
-// use self::cass_internal_api::CassString;
-//use self::cass_internal_api::CassError;
 use self::cass_internal_api::cass_bool_t;
 use self::cass_internal_api::cass_duration_t;
-//use self::cass_internal_api::Struct_CassFuture_;
 
 use cassandra::session::CassSession;
 
-//use cassandra::error::CASS_OK;
 use cassandra::error::CassError;
 use cassandra::result::CassResult;
 use cassandra::statement::CassPrepared;
@@ -20,7 +13,7 @@ use cassandra::types::CassString;
 use std::kinds::marker::NoCopy;
 
 mod cassandra {
-#[path="../error.rs"] pub mod error;
+  #[path="../error.rs"] pub mod error;
 }
 
 #[allow(dead_code)]
@@ -54,7 +47,7 @@ impl CassFuture {
   }}
 
   pub fn get_session(&mut self) -> CassSession {unsafe{
-    CassSession{cass_session:cass_internal_api::cass_future_get_session(self.cass_future),nocopy:NoCopy}
+    CassSession{cass_session:cass_internal_api::cass_future_get_session(self.cass_future)}
   }}
 
   pub fn get_result(&mut self) -> CassResult {unsafe{
@@ -66,12 +59,12 @@ impl CassFuture {
   }}
 
   pub fn error_code(&mut self) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_future_error_code(self.cass_future),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_future_error_code(self.cass_future)}
   }}
 
   pub fn error_message(&mut self) -> CassString {unsafe{
     let ref mut msg = cass_internal_api::cass_future_error_message(self.cass_future);
-    CassString{cass_string:msg,nocopy:NoCopy}
+    CassString{cass_string:msg}
   }}
 
   pub fn print_error(&mut self) {

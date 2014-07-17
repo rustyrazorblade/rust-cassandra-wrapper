@@ -32,39 +32,39 @@ impl CassCollection {
   }}
 
   pub fn append_int32(collection: CassCollection, value: CassInt32Type) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_collection_append_int32(collection.cass_collection,value.cass_int32_type),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_collection_append_int32(collection.cass_collection,value.cass_int32_type)}
   }}
 
   pub fn append_int64(collection: CassCollection, value: CassInt64Type) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_collection_append_int64(collection.cass_collection,value.cass_int64_type),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_collection_append_int64(collection.cass_collection,value.cass_int64_type)}
   }}
 
   pub fn append_float(collection: CassCollection, value: CassFloatType) -> CassError {unsafe{
-      CassError{cass_error:cass_internal_api::cass_collection_append_float(collection.cass_collection,value.cass_float_type),nocopy:NoCopy}
+      CassError{cass_error:cass_internal_api::cass_collection_append_float(collection.cass_collection,value.cass_float_type)}
   }}
 
   pub fn append_double(collection: CassCollection, value: CassDoubleType) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_collection_append_double(collection.cass_collection,value.cass_double_type),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_collection_append_double(collection.cass_collection,value.cass_double_type)}
   }}
 
   pub fn append_bool(collection: CassCollection, value: CassBoolType) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_collection_append_bool(collection.cass_collection,value.cass_bool_type),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_collection_append_bool(collection.cass_collection,value.cass_bool_type)}
   }}
 
   pub fn append_string(collection: CassCollection, value: CassString) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_collection_append_string(collection.cass_collection,*value.cass_string),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_collection_append_string(collection.cass_collection,*value.cass_string)}
   }}
 
   pub fn append_bytes(collection: CassCollection, value: CassBytes) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_collection_append_bytes(collection.cass_collection,value.cass_bytes),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_collection_append_bytes(collection.cass_collection,value.cass_bytes)}
   }}
 
   pub fn append_uuid(collection: CassCollection, value: CassUuid) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_collection_append_uuid(collection.cass_collection,value.cass_uuid),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_collection_append_uuid(collection.cass_collection,value.cass_uuid)}
   }}
 
   pub fn append_inet(collection: CassCollection, value: CassInet) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_collection_append_inet(collection.cass_collection,value.cass_inet),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_collection_append_inet(collection.cass_collection,value.cass_inet)}
     }}
 
   pub fn append_decimal(collection: CassCollection, value: CassDecimal) -> CassError {unsafe{

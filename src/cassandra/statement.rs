@@ -54,18 +54,14 @@ impl<'a> Drop for CassStatement<'a> {
 #[allow(dead_code)]
 impl<'a> CassStatement<'a> {
 pub fn new(statement_string: CassString, parameter_count: cass_size_t, consistency: CASS_CONSISTENCY) ->  CassStatement {unsafe{
-  let statement: *mut cass_internal_api::Struct_CassStatement_ = cass_internal_api::cass_statement_new(*statement_string.cass_string,parameter_count,consistency);
-  let statement_struct: CassStatement = CassStatement{cass_statement:statement,nocopy:NoCopy};
-  let foo:CassStatement = CassStatement{cass_statement:statement,nocopy:NoCopy};
-  foo
+  let statement = cass_internal_api::cass_statement_new(*statement_string.cass_string,parameter_count,consistency);
+  CassStatement{cass_statement:statement,nocopy:NoCopy}
 }}
 
 pub fn build_from_string(statement_string:String, parameter_count: cass_size_t, consistency: CASS_CONSISTENCY) -> CassStatement {unsafe{
   let query_cstring = statement_string.to_c_str();
   let query = cass_internal_api::cass_string_init(query_cstring.as_ptr());
-
-  let mut statement = CassStatement{cass_statement:cass_internal_api::cass_statement_new(query,parameter_count,consistency),nocopy:NoCopy};
-  statement
+  CassStatement{cass_statement:cass_internal_api::cass_statement_new(query,parameter_count,consistency),nocopy:NoCopy}
 }}
 
 #[test]
@@ -74,55 +70,55 @@ pub fn mytest () {
 }
 
   pub fn bind_null(&mut self, index: cass_size_t) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_statement_bind_null(self.cass_statement,index),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_statement_bind_null(self.cass_statement,index)}
   }}
 
   pub fn bind_int32(&mut self, index: cass_size_t, value: cass_int32_t) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_statement_bind_int32(self.cass_statement,index,value),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_statement_bind_int32(self.cass_statement,index,value)}
   }}
 
   pub fn bind_int64(&mut self, index: cass_size_t, value: cass_int64_t) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_statement_bind_int64(self.cass_statement,index,value),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_statement_bind_int64(self.cass_statement,index,value)}
   }}
 
   pub fn bind_float(&mut self, index: cass_size_t, value: cass_float_t) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_statement_bind_float(self.cass_statement,index,value),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_statement_bind_float(self.cass_statement,index,value)}
   }}
 
   pub fn bind_double(&mut self, index: cass_size_t, value: cass_double_t) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_statement_bind_double(self.cass_statement,index,value),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_statement_bind_double(self.cass_statement,index,value)}
   }}
 
   pub fn bind_bool(&mut self, index: cass_size_t, value: cass_bool_t) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_statement_bind_bool(self.cass_statement,index,value),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_statement_bind_bool(self.cass_statement,index,value)}
   }}
 
   pub fn bind_string(&mut self, index: cass_size_t, value: CassString) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_statement_bind_string(self.cass_statement,index,*value.cass_string),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_statement_bind_string(self.cass_statement,index,*value.cass_string)}
   }}
 
   pub fn bind_bytes(&mut self, index: cass_size_t, value: CassBytes) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_statement_bind_bytes(self.cass_statement,index,value.cass_bytes),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_statement_bind_bytes(self.cass_statement,index,value.cass_bytes)}
   }}
 
   pub fn bind_uuid(&mut self, index: cass_size_t, value: CassUuid) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_statement_bind_uuid(self.cass_statement,index,value.cass_uuid),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_statement_bind_uuid(self.cass_statement,index,value.cass_uuid)}
   }}
 
   pub fn bind_inet(&mut self, index: cass_size_t, value: CassInet) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_statement_bind_inet(self.cass_statement,index,value.cass_inet),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_statement_bind_inet(self.cass_statement,index,value.cass_inet)}
   }}
 
   pub fn bind_decimal(&mut self, index: cass_size_t, value: CassDecimal) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_statement_bind_decimal(self.cass_statement,index,value.cass_decimal),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_statement_bind_decimal(self.cass_statement,index,value.cass_decimal)}
   }}
 
   pub fn bind_custom(&mut self, index: cass_size_t, size: cass_size_t, output: *mut *mut cass_byte_t) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_statement_bind_custom(self.cass_statement,index,size,output),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_statement_bind_custom(self.cass_statement,index,size,output)}
   }}
 
   pub fn bind_collection(&mut self, index: cass_size_t, collection: CassCollection, is_map: cass_bool_t) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_statement_bind_collection(self.cass_statement,index,&*collection.cass_collection, is_map),nocopy:NoCopy}
+    CassError{cass_error:cass_internal_api::cass_statement_bind_collection(self.cass_statement,index,&*collection.cass_collection, is_map)}
   }}
 }
 
