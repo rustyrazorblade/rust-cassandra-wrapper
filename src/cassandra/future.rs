@@ -10,8 +10,6 @@ use cassandra::result::CassResult;
 use cassandra::statement::CassPrepared;
 use cassandra::types::CassString;
 
-use std::kinds::marker::NoCopy;
-
 mod cassandra {
   #[path="../error.rs"] pub mod error;
 }
@@ -19,13 +17,12 @@ mod cassandra {
 #[allow(dead_code)]
 pub struct CassFuture {
   pub cass_future:*mut  self::cass_internal_api::Struct_CassFuture_,
-  pub nocopy:NoCopy
 }
 
 
 impl Drop for CassFuture {
   fn drop(&mut self) {unsafe{
-      println!("free my future");
+      //println!("free my future");
       self::cass_internal_api::cass_future_free((self).cass_future)
   }
 }}
@@ -51,11 +48,11 @@ impl CassFuture {
   }}
 
   pub fn get_result(&mut self) -> CassResult {unsafe{
-    CassResult{cass_result:cass_internal_api::cass_future_get_result(self.cass_future),nocopy:NoCopy}
+    CassResult{cass_result:cass_internal_api::cass_future_get_result(self.cass_future)}
   }}
 
   pub fn get_prepared(&mut self) -> CassPrepared {unsafe{
-    CassPrepared{cass_prepared:*cass_internal_api::cass_future_get_prepared(self.cass_future),nocopy:NoCopy}
+    CassPrepared{cass_prepared:*cass_internal_api::cass_future_get_prepared(self.cass_future)}
   }}
 
   pub fn error_code(&mut self) -> CassError {unsafe{
@@ -63,7 +60,7 @@ impl CassFuture {
   }}
 
   pub fn error_message(&mut self) -> CassString {unsafe{
-    let ref mut msg = cass_internal_api::cass_future_error_message(self.cass_future);
+    let msg = cass_internal_api::cass_future_error_message(self.cass_future);
     CassString{cass_string:msg}
   }}
 

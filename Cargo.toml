@@ -7,6 +7,10 @@ authors = [ "tupshin@tupshin.com" ]
 name="basic"
 path="src/bin/basic.rs"
 
+[[bin]]
+name="simple"
+path="src/bin/simple.rs"
+
 [[lib]]
 name = "cassandra" # the name of the library to generate
 path = "src/cassandra/mod.rs"
@@ -14,5 +18,6 @@ path = "src/cassandra/mod.rs"
 [dependencies.rust-cassandra-internal-api]
 git = "https://github.com/tupshin/rust-cassandra-internal-api"
 
-[dependencies.hoare]
-git = "https://github.com/tupshin/libhoare"
+
+# [dependencies.hoare]
+# git = "https://github.com/nick29581/libhoare.git"

@@ -14,8 +14,6 @@ use cassandra::error::CassError;
 
 use cassandra::future;
 
-use std::kinds::marker::NoCopy;
-
 #[allow(dead_code)] pub static CASS_OPTION_CONTACT_POINTS:u32 = self::cass_internal_api::CASS_OPTION_CONTACT_POINTS;
 
 #[allow(dead_code)]
@@ -39,7 +37,7 @@ impl<'a> CassCluster<'a> {
   }}
 
   pub fn connect_async(&mut self) -> future::CassFuture{unsafe{
-    future::CassFuture{cass_future:cass_internal_api::cass_cluster_connect( self.cass_cluster),nocopy:NoCopy}
+    future::CassFuture{cass_future:cass_internal_api::cass_cluster_connect( self.cass_cluster)}
   }}
 
   pub fn connect(mut self) -> (CassError,CassSession) {
@@ -53,7 +51,7 @@ impl<'a> CassCluster<'a> {
 
   pub fn connect_keyspace(&mut self, keyspace: *const c_char) -> future::CassFuture {unsafe{
     let fu = cass_internal_api::cass_cluster_connect_keyspace(self.cass_cluster,keyspace);
-    future::CassFuture{cass_future:fu,nocopy:NoCopy}
+    future::CassFuture{cass_future:fu}
   }}
 
   pub fn free(&mut self) {unsafe{

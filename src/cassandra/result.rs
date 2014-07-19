@@ -1,26 +1,27 @@
 extern crate cass_internal_api;
 
 use self::cass_internal_api::cass_size_t;
-use self::cass_internal_api::CassValueType;
-use self::cass_internal_api::CassRow;
-use self::cass_internal_api::CassString;
-use self::cass_internal_api::CassIterator;
+
 
 use std::fmt::Show;
 use std::fmt::Formatter;
 use std::fmt;
 
-use std::kinds::marker::NoCopy;
+use cassandra::types::CassString;
+use cassandra::iterator::CassIterator;
+
+mod cassandra {
+  #[path="../types.rs"] pub mod types;
+}
 
 #[allow(dead_code)]
 pub struct CassResult {
-  pub cass_result:*const self::cass_internal_api::CassResult,
-  pub nocopy:NoCopy
+  pub cass_result:*const self::cass_internal_api::CassResult
 }
 
 impl Drop for CassResult {
   fn drop(&mut self) {unsafe{
-    println!("free my result");
+    //println!("free my result");
     cass_internal_api::cass_result_free(self.cass_result)
   }}
 }
@@ -42,18 +43,18 @@ impl CassResult {
   }}
 
   pub fn column_name(&self, index: cass_size_t) -> CassString {unsafe{
-    cass_internal_api::cass_result_column_name(self.cass_result,index)
+    CassString{cass_string:cass_internal_api::cass_result_column_name(self.cass_result,index)}
   }}
 
-  pub fn column_type(&self, index: cass_size_t) -> CassValueType {unsafe{
+  pub fn column_type(&self, index: cass_size_t) -> cass_internal_api::CassValueType {unsafe{
     cass_internal_api::cass_result_column_type(self.cass_result,index)
   }}
 
-  pub fn first_row(&self) -> *const CassRow {unsafe{
+  pub fn first_row(&self) -> *const cass_internal_api::CassRow {unsafe{
     cass_internal_api::cass_result_first_row(self.cass_result)
   }}
 
-  pub fn iterator(self) -> *mut CassIterator {unsafe{
-    cass_internal_api::cass_iterator_from_result(self.cass_result)
+  pub fn iterator(self) -> CassIterator {unsafe{
+    CassIterator{cass_iterator:cass_internal_api::cass_iterator_from_result(self.cass_result)}
   }}
 }

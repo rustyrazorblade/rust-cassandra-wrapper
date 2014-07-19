@@ -6,8 +6,6 @@ use cassandra::error::CassError;
 use cassandra::error::CASS_OK;
 use cassandra::result::CassResult;
 
-use std::kinds::marker::NoCopy;
-
 #[allow(dead_code)]
 pub struct CassSession {
   pub cass_session:*mut cass_internal_api::CassSession
@@ -21,8 +19,8 @@ mod cassandra {
 
 #[allow(dead_code)]
 impl CassSession {
-  pub fn close(self) -> *mut self::cass_internal_api::CassFuture {unsafe{
-    cass_internal_api::cass_session_close(self.cass_session)
+  pub fn close(self) -> CassFuture {unsafe{
+    CassFuture{cass_future:cass_internal_api::cass_session_close(self.cass_session)}
   }}
 
   pub fn build(self, statement: self::cass_internal_api::CassString) -> *mut self::cass_internal_api::CassFuture {unsafe{
@@ -33,11 +31,10 @@ impl CassSession {
     cass_internal_api::cass_session_prepare(self.cass_session,statement)
   }}
 
-  pub fn execute(&self, statement:&CassStatement) -> Result<CassResult,CassError> {
+  pub fn execute(&self, statement:CassStatement) -> Result<CassResult,CassError> {
 
     let mut future:CassFuture = self.execute_async(statement);
     future.wait();
-    println!("executing");
     let rc = future.error_code();
     if rc.cass_error != CASS_OK {
       return Err(rc);
@@ -45,9 +42,9 @@ impl CassSession {
     return Ok(future.get_result());
   }
 
-  pub fn execute_async(&self, statement: &CassStatement) -> CassFuture {unsafe{
-    let future:*mut cass_internal_api::Struct_CassFuture_ = cass_internal_api::cass_session_execute(self.cass_session,statement.cass_statement);
-    CassFuture{cass_future:future,nocopy:NoCopy}
+  pub fn execute_async(&self, statement: CassStatement) -> CassFuture {unsafe{
+    let future = cass_internal_api::cass_session_execute(self.cass_session,statement.cass_statement);
+    CassFuture{cass_future:future}
   }}
 
   pub fn execute_batch(self, batch: *mut self::cass_internal_api::CassBatch) -> *mut self::cass_internal_api::CassFuture {unsafe{

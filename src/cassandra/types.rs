@@ -19,16 +19,27 @@ use self::libc::c_char;
 
 use std::kinds::marker::NoCopy;
 
+use std::fmt::Show;
+use std::fmt::Formatter;
+use std::fmt;
+
 #[allow(dead_code)]
 pub struct CassValue {
-  pub cass_value:*const self::cass_internal_api::CassValue,
-  pub nocopy:NoCopy
+  pub cass_value:*const self::cass_internal_api::CassValue
 }
 
 #[allow(dead_code)]
 pub struct CassString {
-  pub cass_string:*mut self::cass_internal_api::CassString
+  pub cass_string:self::cass_internal_api::CassString
 }
+
+impl Show for CassString {
+   fn fmt(&self, f: &mut Formatter) -> fmt::Result {unsafe{
+     let cstr = CString::new(self.cass_string.data,false);
+     write!(f, "{}", cstr.as_str().unwrap())
+
+    }
+}}
 
 #[allow(dead_code)]
 pub struct CassUuid {
@@ -101,12 +112,17 @@ pub struct CassInt64Type {
 
 #[allow(dead_code)]
 impl CassValue {
-  pub fn string_init(null_terminated: CString) -> CassString {unsafe{
-    let my_ptr=null_terminated.as_ptr();
-    let ref mut inited = cass_internal_api::cass_string_init(my_ptr);
-    CassString{cass_string:inited}
+pub fn string_init(str: String) -> CassString {unsafe{
+  let c_str:CString = str.to_c_str();
+  let inited:cass_internal_api::Struct_CassString_ = cass_internal_api::cass_string_init(c_str.as_ptr());
+  CassString{cass_string:inited}
   }}
 
+  pub fn get_string(self) ->  Result<CassString,CassError> {unsafe{
+    let ref mut output:cass_internal_api::Struct_CassString_=cass_internal_api::cass_string_init(self.cass_value as *const i8);
+    let err = CassError{cass_error:cass_internal_api::cass_value_get_string(self.cass_value,output)};
+    if err.cass_error == cass_internal_api::CASS_OK {return Ok(CassString{cass_string:*output})} else {return Err(err)}
+  }}
 
   pub fn get_int32(self) ->  Result<cass_int32_t,CassError> {unsafe{
     let ref mut output:cass_int32_t=0;
@@ -114,11 +130,11 @@ impl CassValue {
     if err.cass_error == cass_internal_api::CASS_OK {return Ok(*output)} else {return Err(err)}
   }}
 
-pub fn get_int64(self) ->  Result<cass_int64_t,CassError> {unsafe{
-  let ref mut output:cass_int64_t=0;
-  let err = CassError{cass_error:cass_internal_api::cass_value_get_int64(self.cass_value,output)};
-  if err.cass_error == cass_internal_api::CASS_OK {return Ok(*output)} else {return Err(err)}
-}}
+  pub fn get_int64(self) ->  Result<cass_int64_t,CassError> {unsafe{
+    let ref mut output:cass_int64_t=0;
+    let err = CassError{cass_error:cass_internal_api::cass_value_get_int64(self.cass_value,output)};
+    if err.cass_error == cass_internal_api::CASS_OK {return Ok(*output)} else {return Err(err)}
+    }}
 
   pub fn get_float(self) ->  Result<cass_float_t,CassError> {unsafe{
     let ref mut output:cass_float_t=0.0;
@@ -230,7 +246,7 @@ pub fn get_int64(self) ->  Result<cass_int64_t,CassError> {unsafe{
   }}
 
   pub fn string_init2(data: *const c_char, length: cass_size_t) -> CassString {unsafe{
-    let ref mut my_str = cass_internal_api::cass_string_init2(data,length);
+    let my_str = cass_internal_api::cass_string_init2(data,length);
     CassString{cass_string:my_str}
   }}
 

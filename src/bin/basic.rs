@@ -10,14 +10,11 @@ use cassandra::session::*;
 use cassandra::types::*;
 use cassandra::error::*;
 
-use cassandra::iterator::CassIterator;
 use cassandra::row::CassRow;
 use cassandra::result::CassResult;
 
 use cassandra::cluster::CASS_OPTION_CONTACT_POINTS;
 use cassandra::consistency::CASS_CONSISTENCY_ONE;
-
-use std::kinds::marker::NoCopy;
 
 #[path = "../cassandra/mod.rs"] mod cassandra {
   #[path="../statement.rs"] pub mod statement;
@@ -46,8 +43,8 @@ pub struct Basic {
 
 pub fn insert_into_basic(session:&CassSession, key:String, basic:Basic) -> Result<CassResult,CassError> {
   let query_string = "INSERT INTO examples.basic (key, bln, flt, dbl, i32, i64) VALUES (?, ?, ?, ?, ?, ?);".to_string();
-  let statement = &mut CassStatement::build_from_string(query_string, 6, CASS_CONSISTENCY_ONE);
-  statement.bind_string(0, CassValue::string_init(key.to_c_str()));
+  let mut statement = CassStatement::build_from_string(query_string, 6, CASS_CONSISTENCY_ONE);
+  statement.bind_string(0, CassValue::string_init(key));
   statement.bind_bool(1, basic.bln as u32);
   statement.bind_float(2, basic.flt);
   statement.bind_double(3, basic.dbl);
@@ -58,11 +55,9 @@ pub fn insert_into_basic(session:&CassSession, key:String, basic:Basic) -> Resul
 
 pub fn select_from_basic(session:&CassSession, key:String) -> Result<CassResult,CassError> {
   let query_string = "SELECT * FROM examples.basic WHERE key = ?;".to_string();
-  let statement = &mut CassStatement::build_from_string(query_string, 6, CASS_CONSISTENCY_ONE);
-  println!("{}",key);
-  let key_str = CassValue::string_init(key.to_c_str());
+  let mut statement = CassStatement::build_from_string(query_string, 6, CASS_CONSISTENCY_ONE);
+  let key_str = CassValue::string_init(key);
   statement.bind_string(0, key_str);
-  println!("statement:{}","statement");
   let future:Result<CassResult,CassError>=session.execute(statement);
   match future {
     Err(err) => return Err(err),
@@ -91,14 +86,12 @@ fn main()  {
   }
 
   let insert = insert_into_basic(&session, "test".to_string(), input);
-  println!("{}",insert);
   let response = select_from_basic(&session, "test".to_string());
 
   match response {
    Err(fail) => println!("result: {}",fail),
    Ok(results) => {
-     println!("result: Is OK: {}", results)
-     let mut iterator = CassIterator{cass_iterator:results.iterator(),nocopy:NoCopy};
+     let mut iterator = results.iterator();
      if iterator.next() {
        let row:CassRow = iterator.get_row();
        match row.get_column(1).get_bool() {Err(err) => println!("{}--",err),Ok(col) => output.bln=col}

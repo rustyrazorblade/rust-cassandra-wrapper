@@ -33,28 +33,28 @@ use std::fmt::Result;
 use std::kinds::marker::NoCopy;
 
 #[allow(dead_code)]
-pub struct CassStatement<'a> {
+pub struct CassStatement {
    pub cass_statement:*mut cass_internal_api::CassStatement,
    pub nocopy:NoCopy
 }
 
-impl<'a> Show for CassStatement<'a> {
+impl Show for CassStatement {
    fn fmt(&self, f: &mut Formatter) -> Result {
      write!(f, "(Statement:{})", self)
     }
 }
 
-impl<'a> Drop for CassStatement<'a> {
+impl Drop for CassStatement {
   fn drop(&mut self) {unsafe{
-    println!("free my statement");
+    //println!("free my statement");
     cass_internal_api::cass_statement_free(self.cass_statement)
   }}
 }
 
 #[allow(dead_code)]
-impl<'a> CassStatement<'a> {
+impl<'a> CassStatement {
 pub fn new(statement_string: CassString, parameter_count: cass_size_t, consistency: CASS_CONSISTENCY) ->  CassStatement {unsafe{
-  let statement = cass_internal_api::cass_statement_new(*statement_string.cass_string,parameter_count,consistency);
+  let statement = cass_internal_api::cass_statement_new(statement_string.cass_string,parameter_count,consistency);
   CassStatement{cass_statement:statement,nocopy:NoCopy}
 }}
 
@@ -94,7 +94,7 @@ pub fn mytest () {
   }}
 
   pub fn bind_string(&mut self, index: cass_size_t, value: CassString) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_statement_bind_string(self.cass_statement,index,*value.cass_string)}
+    CassError{cass_error:cass_internal_api::cass_statement_bind_string(self.cass_statement,index,value.cass_string)}
   }}
 
   pub fn bind_bytes(&mut self, index: cass_size_t, value: CassBytes) -> CassError {unsafe{
@@ -125,7 +125,6 @@ pub fn mytest () {
 #[allow(dead_code)]
 pub struct CassPrepared {
   pub cass_prepared:cass_internal_api::CassPrepared,
-  pub nocopy:NoCopy
   //pub cass_statement:CassStatement
 }
 

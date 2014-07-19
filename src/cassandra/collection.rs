@@ -52,7 +52,7 @@ impl CassCollection {
   }}
 
   pub fn append_string(collection: CassCollection, value: CassString) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_collection_append_string(collection.cass_collection,*value.cass_string)}
+    CassError{cass_error:cass_internal_api::cass_collection_append_string(collection.cass_collection,value.cass_string)}
   }}
 
   pub fn append_bytes(collection: CassCollection, value: CassBytes) -> CassError {unsafe{
