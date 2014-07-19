@@ -11,6 +11,10 @@ path="src/bin/basic.rs"
 name="simple"
 path="src/bin/simple.rs"
 
+[[bin]]
+name="async"
+path="src/bin/async.rs"
+
 [[lib]]
 name = "cassandra" # the name of the library to generate
 path = "src/cassandra/mod.rs"

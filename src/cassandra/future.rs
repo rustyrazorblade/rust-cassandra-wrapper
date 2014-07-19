@@ -10,6 +10,8 @@ use cassandra::result::CassResult;
 use cassandra::statement::CassPrepared;
 use cassandra::types::CassString;
 
+use std::kinds::marker::NoCopy;
+
 mod cassandra {
   #[path="../error.rs"] pub mod error;
 }
@@ -61,7 +63,7 @@ impl CassFuture {
 
   pub fn error_message(&mut self) -> CassString {unsafe{
     let msg = cass_internal_api::cass_future_error_message(self.cass_future);
-    CassString{cass_string:msg}
+    CassString{cass_string:msg,nocopy:NoCopy}
   }}
 
   pub fn print_error(&mut self) {

@@ -80,7 +80,7 @@ fn main()  {
       //let message = result_future.error_message();
     }
 
-    let mut close_future = session.close();
+    let mut close_future = session.close_async();
     close_future.wait();
   } else {
     let message = session_future.error_message();

@@ -30,14 +30,14 @@ pub struct CassValue {
 
 #[allow(dead_code)]
 pub struct CassString {
-  pub cass_string:self::cass_internal_api::CassString
+  pub cass_string:self::cass_internal_api::CassString,
+  pub nocopy:NoCopy
 }
 
 impl Show for CassString {
    fn fmt(&self, f: &mut Formatter) -> fmt::Result {unsafe{
      let cstr = CString::new(self.cass_string.data,false);
      write!(f, "{}", cstr.as_str().unwrap())
-
     }
 }}
 
@@ -112,16 +112,33 @@ pub struct CassInt64Type {
 
 #[allow(dead_code)]
 impl CassValue {
-pub fn string_init(str: String) -> CassString {unsafe{
-  let c_str:CString = str.to_c_str();
-  let inited:cass_internal_api::Struct_CassString_ = cass_internal_api::cass_string_init(c_str.as_ptr());
-  CassString{cass_string:inited}
-  }}
+// pub fn string_init(str: String) -> CassString {unsafe{
+//   let query_cstring:CString = str.to_c_str();
+//   let query:cass_internal_api::Struct_CassString_ = cass_internal_api::cass_string_init(query_cstring.as_ptr());
+//   println!("initing:{}",query);
+//   CassString{cass_string:query}
+//   }}
+
+// pub fn string_init(statement_string:String) -> CassString {unsafe{
+//   let cstring = statement_string.clone().to_c_str();
+//   let ref string = cass_internal_api::cass_string_init(cstring.as_ptr());
+//   let wrapped = CassString{cass_string:*string,nocopy:NoCopy};
+//   wrapped
+// }}
+
+pub fn string_init(string:String) -> CassString {unsafe{
+  let cstr:CString = string.to_c_str();
+  let unwrapped:*const i8 = cstr.unwrap();
+  let string2 = cass_internal_api::cass_string_init(unwrapped);
+  CassString{cass_string:string2,nocopy:NoCopy}
+}}
+
 
   pub fn get_string(self) ->  Result<CassString,CassError> {unsafe{
     let ref mut output:cass_internal_api::Struct_CassString_=cass_internal_api::cass_string_init(self.cass_value as *const i8);
     let err = CassError{cass_error:cass_internal_api::cass_value_get_string(self.cass_value,output)};
-    if err.cass_error == cass_internal_api::CASS_OK {return Ok(CassString{cass_string:*output})} else {return Err(err)}
+    let ref output = *output;
+    if err.cass_error == cass_internal_api::CASS_OK {return Ok(CassString{cass_string:*output,nocopy:NoCopy})} else {return Err(err)}
   }}
 
   pub fn get_int32(self) ->  Result<cass_int32_t,CassError> {unsafe{
@@ -247,7 +264,7 @@ pub fn string_init(str: String) -> CassString {unsafe{
 
   pub fn string_init2(data: *const c_char, length: cass_size_t) -> CassString {unsafe{
     let my_str = cass_internal_api::cass_string_init2(data,length);
-    CassString{cass_string:my_str}
+    CassString{cass_string:my_str,nocopy:NoCopy}
   }}
 
   pub fn cass_iterator_from_collection(self) -> CassIterator {unsafe{

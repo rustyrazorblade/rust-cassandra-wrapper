@@ -44,6 +44,7 @@ pub struct Basic {
 pub fn insert_into_basic(session:&CassSession, key:String, basic:Basic) -> Result<CassResult,CassError> {
   let query_string = "INSERT INTO examples.basic (key, bln, flt, dbl, i32, i64) VALUES (?, ?, ?, ?, ?, ?);".to_string();
   let mut statement = CassStatement::build_from_string(query_string, 6, CASS_CONSISTENCY_ONE);
+  println!("inserting key:{}",key);
   statement.bind_string(0, CassValue::string_init(key));
   statement.bind_bool(1, basic.bln as u32);
   statement.bind_float(2, basic.flt);
@@ -81,9 +82,7 @@ fn main()  {
   let input = Basic{bln:true, dbl:0.001f64, flt:0.0002f32, i32:1, i64:2 };
   let mut output=  Basic{bln:false, dbl:0.0f64, flt:0.00f32, i32:0, i64:0};
   let (rc,session) = cluster.connect();
-  if rc.is_error() {
-    return
-  }
+  if rc.is_error() {return}
 
   let insert = insert_into_basic(&session, "test".to_string(), input);
   let response = select_from_basic(&session, "test".to_string());

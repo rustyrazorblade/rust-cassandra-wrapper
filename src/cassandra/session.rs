@@ -19,7 +19,7 @@ mod cassandra {
 
 #[allow(dead_code)]
 impl CassSession {
-  pub fn close(self) -> CassFuture {unsafe{
+  pub fn close_async(self) -> CassFuture {unsafe{
     CassFuture{cass_future:cass_internal_api::cass_session_close(self.cass_session)}
   }}
 

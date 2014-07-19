@@ -10,6 +10,8 @@ use std::fmt;
 use cassandra::types::CassString;
 use cassandra::iterator::CassIterator;
 
+use std::kinds::marker::NoCopy;
+
 mod cassandra {
   #[path="../types.rs"] pub mod types;
 }
@@ -43,7 +45,8 @@ impl CassResult {
   }}
 
   pub fn column_name(&self, index: cass_size_t) -> CassString {unsafe{
-    CassString{cass_string:cass_internal_api::cass_result_column_name(self.cass_result,index)}
+    let col_name = cass_internal_api::cass_result_column_name(self.cass_result,index);  
+    CassString{cass_string:col_name,nocopy:NoCopy}
   }}
 
   pub fn column_type(&self, index: cass_size_t) -> cass_internal_api::CassValueType {unsafe{
