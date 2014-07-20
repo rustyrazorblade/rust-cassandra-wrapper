@@ -7,6 +7,9 @@ use cassandra::cluster::*;
 use cassandra::statement::*;
 use cassandra::types::*;
 
+
+use std::c_str::CString;
+
 use cassandra::types::CassString;
 
 use cassandra::cluster::CASS_OPTION_CONTACT_POINTS;
@@ -24,6 +27,7 @@ use cassandra::consistency::CASS_CONSISTENCY_ONE;
   #[path="../future.rs"] pub mod future;
   #[path="../error.rs"] pub mod error;
   #[path="../session.rs"] pub mod session;
+  #[path="../batch.rs"] pub mod batch;
 }
 
 #[deriving(Show)]
@@ -35,12 +39,8 @@ pub struct Simple {
 }
 
 fn main()  {
-  let mut cluster = CassCluster::new();
-  let contact_points = ["127.0.0.1".to_string().to_c_str()];
-
-  for contact_point in contact_points.iter() {
-    cluster.setopt(CASS_OPTION_CONTACT_POINTS, contact_point);
-  }
+  let contact_points:Vec<CString> = vec!("127.0.0.1".to_string().to_c_str());
+  let mut cluster = CassCluster::create(contact_points);
 
   let mut session_future = cluster.connect_async();
   session_future.wait();
@@ -61,10 +61,10 @@ fn main()  {
 
       let foo:String = "abc2".to_string();
       let mut output:Simple = Simple {
-          keyspace_name:CassValue::string_init("abc".to_string()),
+          keyspace_name:CassValue::string_init(&"abc".to_string()),
           durable_writes:false,
-          strategy_class:CassValue::string_init("def".to_string()),
-          strategy_options:CassValue::string_init("ghi".to_string()),
+          strategy_class:CassValue::string_init(&"def".to_string()),
+          strategy_options:CassValue::string_init(&"ghi".to_string()),
         };
         while rows.next() {
           let row = rows.get_row();

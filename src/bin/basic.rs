@@ -4,11 +4,16 @@
 extern crate cass_internal_api;
 extern crate libc;
 
+
+use std::c_str::CString;
+
 use cassandra::cluster::*;
 use cassandra::statement::*;
 use cassandra::session::*;
 use cassandra::types::*;
 use cassandra::error::*;
+use cassandra::batch::*;
+
 
 use cassandra::row::CassRow;
 use cassandra::result::CassResult;
@@ -27,6 +32,7 @@ use cassandra::consistency::CASS_CONSISTENCY_ONE;
   #[path="../row.rs"] pub mod row;
   #[path="../future.rs"] pub mod future;
   #[path="../error.rs"] pub mod error;
+  #[path="../batch.rs"] pub mod batch;
   #[path="../session.rs"] pub mod session;
 }
 
@@ -45,7 +51,7 @@ pub fn insert_into_basic(session:&CassSession, key:String, basic:Basic) -> Resul
   let query_string = "INSERT INTO examples.basic (key, bln, flt, dbl, i32, i64) VALUES (?, ?, ?, ?, ?, ?);".to_string();
   let mut statement = CassStatement::build_from_string(query_string, 6, CASS_CONSISTENCY_ONE);
   println!("inserting key:{}",key);
-  statement.bind_string(0, CassValue::string_init(key));
+  statement.bind_string(0, CassValue::string_init(&key));
   statement.bind_bool(1, basic.bln as u32);
   statement.bind_float(2, basic.flt);
   statement.bind_double(3, basic.dbl);
@@ -57,7 +63,7 @@ pub fn insert_into_basic(session:&CassSession, key:String, basic:Basic) -> Resul
 pub fn select_from_basic(session:&CassSession, key:String) -> Result<CassResult,CassError> {
   let query_string = "SELECT * FROM examples.basic WHERE key = ?;".to_string();
   let mut statement = CassStatement::build_from_string(query_string, 6, CASS_CONSISTENCY_ONE);
-  let key_str = CassValue::string_init(key);
+  let key_str = CassValue::string_init(&key);
   statement.bind_string(0, key_str);
   let future:Result<CassResult,CassError>=session.execute(statement);
   match future {
@@ -68,23 +74,23 @@ pub fn select_from_basic(session:&CassSession, key:String) -> Result<CassResult,
   }
 }
 
-pub fn create_cluster() -> CassCluster {
-  let contact_points = ["127.0.0.1".to_string().to_c_str()];
-  let mut cluster = CassCluster::new();
-  for contact_point in contact_points.iter() {
-    cluster.setopt(CASS_OPTION_CONTACT_POINTS, contact_point);
-  }
-  cluster
-}
-
 fn main()  {
-  let cluster = create_cluster();
   let input = Basic{bln:true, dbl:0.001f64, flt:0.0002f32, i32:1, i64:2 };
   let mut output=  Basic{bln:false, dbl:0.0f64, flt:0.00f32, i32:0, i64:0};
+
+  let contact_points = vec!("127.0.0.1".to_string().to_c_str());
+let cluster = CassCluster::create(contact_points);
+
   let (rc,session) = cluster.connect();
   if rc.is_error() {return}
 
   let insert = insert_into_basic(&session, "test".to_string(), input);
+
+  match insert {
+   Err(fail) => println!("result: {}",fail),
+   Ok(results) => {}
+   }
+
   let response = select_from_basic(&session, "test".to_string());
 
   match response {

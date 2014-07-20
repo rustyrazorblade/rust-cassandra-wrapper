@@ -126,7 +126,7 @@ impl CassValue {
 //   wrapped
 // }}
 
-pub fn string_init(string:String) -> CassString {unsafe{
+pub fn string_init(string:&String) -> CassString {unsafe{
   let cstr:CString = string.to_c_str();
   let unwrapped:*const i8 = cstr.unwrap();
   let string2 = cass_internal_api::cass_string_init(unwrapped);

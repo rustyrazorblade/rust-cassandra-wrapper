@@ -14,6 +14,9 @@ use cassandra::error::CassError;
 
 use cassandra::future;
 
+use cassandra::consistency::CASS_CONSISTENCY;
+use cassandra::statement::CassStatement;
+
 #[allow(dead_code)] pub static CASS_OPTION_CONTACT_POINTS:u32 = self::cass_internal_api::CASS_OPTION_CONTACT_POINTS;
 
 #[allow(dead_code)]
@@ -24,9 +27,17 @@ pub struct CassCluster<'a> {
 #[allow(dead_code)]
 impl<'a> CassCluster<'a> {
 
-  pub fn new() -> CassCluster {unsafe{
+  fn new() -> CassCluster {unsafe{
     CassCluster{cass_cluster:cass_internal_api::cass_cluster_new()}
   }}
+
+  pub fn create(contact_points:Vec<CString>) -> CassCluster {
+    let mut cluster = CassCluster::new();
+    for contact_point in contact_points.iter() {
+      cluster.setopt(CASS_OPTION_CONTACT_POINTS, contact_point);
+    }
+    cluster
+  }
 
   pub fn setopt(&mut self, option: CassOption, data: &CString) -> cass_internal_api::CassError {unsafe{
     cass_internal_api::cass_cluster_setopt( self.cass_cluster,option,data.as_ptr() as *const libc::c_void,data.len() as u64)

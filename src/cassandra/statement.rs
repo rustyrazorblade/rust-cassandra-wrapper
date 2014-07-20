@@ -25,6 +25,7 @@ use cassandra::types::CassUuid;
 use cassandra::types::CassBytes;
 use cassandra::types::CassString;
 use cassandra::consistency::CASS_CONSISTENCY;
+//use cassandra::consistency::CassConsistency;
 
 use std::fmt::Show;
 use std::fmt::Formatter;
@@ -34,8 +35,7 @@ use std::kinds::marker::NoCopy;
 
 #[allow(dead_code)]
 pub struct CassStatement {
-   pub cass_statement:*mut cass_internal_api::CassStatement,
-   pub nocopy:NoCopy
+   pub cass_statement:*mut cass_internal_api::CassStatement
 }
 
 impl Show for CassStatement {
@@ -55,13 +55,13 @@ impl Drop for CassStatement {
 impl<'a> CassStatement {
 pub fn new(statement_string: CassString, parameter_count: cass_size_t, consistency: CASS_CONSISTENCY) ->  CassStatement {unsafe{
   let statement = cass_internal_api::cass_statement_new(statement_string.cass_string,parameter_count,consistency);
-  CassStatement{cass_statement:statement,nocopy:NoCopy}
+  CassStatement{cass_statement:statement}
 }}
 
 pub fn build_from_string(statement_string:String, parameter_count: cass_size_t, consistency: CASS_CONSISTENCY) -> CassStatement {unsafe{
   let query_cstring = statement_string.to_c_str();
   let query = cass_internal_api::cass_string_init(query_cstring.as_ptr());
-  CassStatement{cass_statement:cass_internal_api::cass_statement_new(query,parameter_count,consistency),nocopy:NoCopy}
+  CassStatement{cass_statement:cass_internal_api::cass_statement_new(query,parameter_count,consistency)}
 }}
 
 #[test]
@@ -124,7 +124,7 @@ pub fn mytest () {
 
 #[allow(dead_code)]
 pub struct CassPrepared {
-  pub cass_prepared:cass_internal_api::CassPrepared,
+  pub cass_prepared:*const cass_internal_api::CassPrepared,
   //pub cass_statement:CassStatement
 }
 
@@ -146,7 +146,7 @@ impl CassPrepared {
   // }}
 
 
-  // pub fn bind(&self, parameter_count: cass_size_t, consistency: CassConsistency) -> *mut CassStatement {unsafe{
-  //   self.cass_statement.cass_statement = *cass_internal_api::cass_prepared_bind(&(*self).cass_prepared,parameter_count,consistency)
-  // }}
+  pub fn bind(self, parameter_count: cass_size_t) -> CassStatement {unsafe{
+    CassStatement{cass_statement:cass_internal_api::cass_prepared_bind(self.cass_prepared,parameter_count,1 /*fixme consistency*/)}
+  }}
 }

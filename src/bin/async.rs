@@ -39,6 +39,7 @@ use std::kinds::marker::NoCopy;
   #[path="../future.rs"] pub mod future;
   #[path="../error.rs"] pub mod error;
   #[path="../session.rs"] pub mod session;
+  #[path="../batch.rs"] pub mod batch;
 }
 
 static NUM_CONCURRENT_REQUESTS:uint = 100;
@@ -60,7 +61,7 @@ fn insert_into_async(session:CassSession, key:String) {unsafe{
   while i < NUM_CONCURRENT_REQUESTS {
   let mut statement = CassStatement::build_from_string(query.clone(), 6, CASS_CONSISTENCY_ONE);
 
-  let wrapped = CassValue::string_init(key + i.to_string());
+  let wrapped = CassValue::string_init(&(key + i.to_string()));
     println!("response:{}",wrapped);
 
 
@@ -83,13 +84,12 @@ fn insert_into_async(session:CassSession, key:String) {unsafe{
 }}
 
 fn main() {
+  let contact_points = vec!("127.0.0.1".to_string().to_c_str());
+  let mut cluster = CassCluster::create(contact_points);
 
-  let mut cluster = CassCluster::new();
-  let contact_points = ["127.0.0.1".to_string().to_c_str()];
-
-for contact_point in contact_points.iter() {
-  cluster.setopt(CASS_OPTION_CONTACT_POINTS, contact_point);
-}
+// for contact_point in contact_points.iter() {
+//   cluster.setopt(CASS_OPTION_CONTACT_POINTS, contact_point);
+// }
 
   let (rc,session) = cluster.connect();
   //  session_future.wait();

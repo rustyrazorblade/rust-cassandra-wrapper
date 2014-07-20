@@ -6,7 +6,7 @@ extern crate cass_internal_api;
 
 
 //use self::cluster::new;
-mod cassandra {
+pub mod cassandra {
 #[path="../session.rs"] pub mod session;
 #[path="../cluster.rs"] pub mod cluster;
 #[path="../option.rs"] pub mod option;

@@ -54,7 +54,7 @@ impl CassFuture {
   }}
 
   pub fn get_prepared(&mut self) -> CassPrepared {unsafe{
-    CassPrepared{cass_prepared:*cass_internal_api::cass_future_get_prepared(self.cass_future)}
+    CassPrepared{cass_prepared:cass_internal_api::cass_future_get_prepared(self.cass_future)}
   }}
 
   pub fn error_code(&mut self) -> CassError {unsafe{
