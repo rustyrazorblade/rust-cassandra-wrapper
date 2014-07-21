@@ -44,13 +44,11 @@ impl Show for CassString {
 #[allow(dead_code)]
 pub struct CassUuid {
   pub cass_uuid:self::cass_internal_api::CassUuid,
-  pub nocopy:NoCopy
 }
 
 #[allow(dead_code)]
 pub struct CassInet {
   pub cass_inet:self::cass_internal_api::CassInet,
-  pub nocopy:NoCopy
 }
 
 #[allow(dead_code)]
@@ -214,8 +212,10 @@ pub fn string_init(string:&String) -> CassString {unsafe{
     CassValueType{cass_value_type:cass_internal_api::cass_value_secondary_sub_type(self.cass_value),nocopy:NoCopy}
   }}
 
-  pub fn cass_uuid_generate_time(output: CassUuid) {unsafe{
-    cass_internal_api::cass_uuid_generate_time(output.cass_uuid);
+  pub fn generate_timeuuid() -> CassUuid {unsafe{
+    let mut uuid:[u8, .. 16]=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    cass_internal_api::cass_uuid_generate_time(uuid);
+    CassUuid{cass_uuid:uuid}
   }}
 
   pub fn cass_uuid_from_time(time: cass_uint64_t, output: CassUuid) {unsafe{
@@ -247,11 +247,11 @@ pub fn string_init(string:&String) -> CassString {unsafe{
   }}
 
   pub fn cass_inet_init_v4(address: *const cass_uint8_t) -> CassInet {unsafe{
-    CassInet{cass_inet:cass_internal_api::cass_inet_init_v4(address),nocopy:NoCopy}
+    CassInet{cass_inet:cass_internal_api::cass_inet_init_v4(address)}
   }}
 
   pub fn cass_inet_init_v6(address: *const cass_uint8_t) -> CassInet {unsafe{
-    CassInet{cass_inet:cass_internal_api::cass_inet_init_v6(address),nocopy:NoCopy}
+    CassInet{cass_inet:cass_internal_api::cass_inet_init_v6(address)}
   }}
 
   pub fn cass_decimal_init(scale: cass_int32_t, varint: CassBytes) -> CassDecimal {unsafe{

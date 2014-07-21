@@ -23,9 +23,9 @@ pub struct CassCollection {
 
 #[allow(dead_code)]
 impl CassCollection {
-  pub fn new(item_count: CassSizeType) -> CassCollection {unsafe{
-    CassCollection{cass_collection:cass_internal_api::cass_collection_new(item_count.cass_size_type),nocopy:NoCopy}
-  }}
+ // pub fn new(item_count: CassSizeType) -> CassCollection {unsafe{
+ //   CassCollection{cass_collection:cass_internal_api::cass_collection_new(item_count.cass_size_type),nocopy:NoCopy}
+ // }}
 
   pub fn free(collection: CassCollection) {unsafe{
     cass_internal_api::cass_collection_free(collection.cass_collection)

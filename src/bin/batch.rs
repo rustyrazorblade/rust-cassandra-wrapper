@@ -24,7 +24,6 @@ use collections::Deque;
 
 use std::collections::DList;
 
-use cassandra::cluster::CASS_OPTION_CONTACT_POINTS;
 use cassandra::consistency::CASS_CONSISTENCY_ONE;
 
 
@@ -94,7 +93,7 @@ fn insert_into_batch_with_prepared(session:CassSession , prepared:CassPrepared, 
 }
 
 fn main() {
-let contact_points = vec!("127.0.0.1".to_string().to_c_str());
+let contact_points = "127.0.0.1".to_string();
 
   let mut cluster = CassCluster::create(contact_points);
 

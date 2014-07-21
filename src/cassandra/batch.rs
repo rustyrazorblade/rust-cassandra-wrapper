@@ -17,7 +17,7 @@ pub struct CassBatch {
 #[allow(dead_code)]
 impl CassBatch {
   pub fn new(consistency:CASS_CONSISTENCY, batch_type: CassBatchType) -> CassBatch {unsafe{
-    CassBatch{cass_batch:cass_internal_api::cass_batch_new(consistency,batch_type)}
+    CassBatch{cass_batch:cass_internal_api::cass_batch_new(batch_type)}
   }}
 
   pub fn free(&mut self) {unsafe{

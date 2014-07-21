@@ -40,11 +40,11 @@ impl CassSession {
   }
 
   pub fn execute_async(&self, statement: CassStatement) -> CassFuture {unsafe{
-    let future = cass_internal_api::cass_session_execute(self.cass_session,statement.cass_statement);
+    let future = cass_internal_api::cass_session_execute(self.cass_session,&*statement.cass_statement);
     CassFuture{cass_future:future}
   }}
 
   pub fn execute_batch(self, batch: CassBatch) -> CassFuture {unsafe{
-    CassFuture{cass_future:cass_internal_api::cass_session_execute_batch(self.cass_session,batch.cass_batch)}
+    CassFuture{cass_future:cass_internal_api::cass_session_execute_batch(self.cass_session,&*batch.cass_batch)}
   }}
 }

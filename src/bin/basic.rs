@@ -18,7 +18,6 @@ use cassandra::batch::*;
 use cassandra::row::CassRow;
 use cassandra::result::CassResult;
 
-use cassandra::cluster::CASS_OPTION_CONTACT_POINTS;
 use cassandra::consistency::CASS_CONSISTENCY_ONE;
 
 #[path = "../cassandra/mod.rs"] mod cassandra {
@@ -78,7 +77,7 @@ fn main()  {
   let input = Basic{bln:true, dbl:0.001f64, flt:0.0002f32, i32:1, i64:2 };
   let mut output=  Basic{bln:false, dbl:0.0f64, flt:0.00f32, i32:0, i64:0};
 
-  let contact_points = vec!("127.0.0.1".to_string().to_c_str());
+  let contact_points = "127.0.0.1".to_string();
 let cluster = CassCluster::create(contact_points);
 
   let (rc,session) = cluster.connect();

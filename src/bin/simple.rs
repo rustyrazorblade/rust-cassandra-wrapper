@@ -12,7 +12,6 @@ use std::c_str::CString;
 
 use cassandra::types::CassString;
 
-use cassandra::cluster::CASS_OPTION_CONTACT_POINTS;
 use cassandra::consistency::CASS_CONSISTENCY_ONE;
 
 #[path = "../cassandra/mod.rs"] mod cassandra {
@@ -39,7 +38,7 @@ pub struct Simple {
 }
 
 fn main()  {
-  let contact_points:Vec<CString> = vec!("127.0.0.1".to_string().to_c_str());
+  let contact_points = "127.0.0.1".to_string();
   let mut cluster = CassCluster::create(contact_points);
 
   let mut session_future = cluster.connect_async();

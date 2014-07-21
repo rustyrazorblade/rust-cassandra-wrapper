@@ -54,14 +54,14 @@ impl Drop for CassStatement {
 #[allow(dead_code)]
 impl<'a> CassStatement {
 pub fn new(statement_string: CassString, parameter_count: cass_size_t, consistency: CASS_CONSISTENCY) ->  CassStatement {unsafe{
-  let statement = cass_internal_api::cass_statement_new(statement_string.cass_string,parameter_count,consistency);
+  let statement = cass_internal_api::cass_statement_new(statement_string.cass_string,parameter_count);
   CassStatement{cass_statement:statement}
 }}
 
 pub fn build_from_string(statement_string:String, parameter_count: cass_size_t, consistency: CASS_CONSISTENCY) -> CassStatement {unsafe{
   let query_cstring = statement_string.to_c_str();
   let query = cass_internal_api::cass_string_init(query_cstring.as_ptr());
-  CassStatement{cass_statement:cass_internal_api::cass_statement_new(query,parameter_count,consistency)}
+  CassStatement{cass_statement:cass_internal_api::cass_statement_new(query,parameter_count)}
 }}
 
 #[test]
@@ -118,7 +118,7 @@ pub fn mytest () {
   }}
 
   pub fn bind_collection(&mut self, index: cass_size_t, collection: CassCollection, is_map: cass_bool_t) -> CassError {unsafe{
-    CassError{cass_error:cass_internal_api::cass_statement_bind_collection(self.cass_statement,index,&*collection.cass_collection, is_map)}
+    CassError{cass_error:cass_internal_api::cass_statement_bind_collection(self.cass_statement,index,&*collection.cass_collection)}
   }}
 }
 
@@ -147,6 +147,6 @@ impl CassPrepared {
 
 
   pub fn bind(self, parameter_count: cass_size_t) -> CassStatement {unsafe{
-    CassStatement{cass_statement:cass_internal_api::cass_prepared_bind(self.cass_prepared,parameter_count,1 /*fixme consistency*/)}
+    CassStatement{cass_statement:cass_internal_api::cass_prepared_bind(self.cass_prepared,parameter_count)}
   }}
 }
