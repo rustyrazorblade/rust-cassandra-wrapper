@@ -19,7 +19,7 @@ impl CassSession {
     CassFuture{cass_future:cass_internal_api::cass_session_close(self.cass_session)}
   }}
 
-  pub fn build(&self, statement: self::cass_internal_api::CassString) -> *mut self::cass_internal_api::CassFuture {unsafe{
+  fn build(&self, statement: cass_internal_api::CassString) -> *mut cass_internal_api::CassFuture {unsafe{
     cass_internal_api::cass_session_prepare(self.cass_session,statement)
   }}
 

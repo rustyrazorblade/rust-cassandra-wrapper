@@ -1,7 +1,7 @@
 extern crate cass_internal_api;
 
-use self::cass_internal_api::cass_bool_t;
-use self::cass_internal_api::cass_duration_t;
+use cass_internal_api::cass_bool_t;
+use cass_internal_api::cass_duration_t;
 
 use session::CassSession;
 use error::CassError;
@@ -15,14 +15,13 @@ mod cassandra {
 
 #[allow(dead_code)]
 pub struct CassFuture {
-  pub cass_future:*mut  self::cass_internal_api::Struct_CassFuture_,
+  pub cass_future:*mut  cass_internal_api::Struct_CassFuture_,
 }
 
 
 impl Drop for CassFuture {
   fn drop(&mut self) {unsafe{
-      //println!("free my future");
-      self::cass_internal_api::cass_future_free((self).cass_future)
+      cass_internal_api::cass_future_free(self.cass_future)
   }
 }}
 

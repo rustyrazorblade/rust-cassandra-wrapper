@@ -1,6 +1,6 @@
 extern crate cass_internal_api;
 
-use self::cass_internal_api::cass_size_t;
+use cass_internal_api::cass_size_t;
 
 use std::fmt::Show;
 use std::fmt::Formatter;
@@ -15,7 +15,7 @@ mod cassandra {
 
 #[allow(dead_code)]
 pub struct CassResult {
-  pub cass_result:*const self::cass_internal_api::CassResult
+  pub cass_result:*const cass_internal_api::CassResult
 }
 
 impl Drop for CassResult {

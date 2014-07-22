@@ -9,12 +9,11 @@ pub static CASS_BATCH_TYPE_LOGGED:u32 = cass_internal_api::CASS_BATCH_TYPE_LOGGE
 
 #[allow(dead_code)]
 pub struct CassBatch {
-  pub cass_batch:*mut self::cass_internal_api::CassBatch,
+  pub cass_batch:*mut cass_internal_api::CassBatch,
 }
 
 #[allow(dead_code)]
 impl CassBatch {
-
   pub fn new(batch_type: CassBatchType) -> CassBatch {unsafe{
     CassBatch{cass_batch:cass_internal_api::cass_batch_new(batch_type)}
   }}

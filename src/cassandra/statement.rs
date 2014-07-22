@@ -1,21 +1,12 @@
 extern crate cass_internal_api;
-// use self::cass_internal_api::CassString;
-// use self::cass_internal_api::CassConsistency;
-//
-// use self::cass_internal_api::CassError;
-// use self::cass_internal_api::CassBytes;
-// use self::cass_internal_api::CassUuid;
-// use self::cass_internal_api::CassInet;
-// use self::cass_internal_api::CassDecimal;
-// use self::cass_internal_api::CassCollection;
-//
-use self::cass_internal_api::cass_size_t;
-use self::cass_internal_api::cass_bool_t;
-use self::cass_internal_api::cass_int32_t;
-use self::cass_internal_api::cass_int64_t;
-use self::cass_internal_api::cass_float_t;
-use self::cass_internal_api::cass_double_t;
-use self::cass_internal_api::cass_byte_t;
+
+use cass_internal_api::cass_size_t;
+use cass_internal_api::cass_bool_t;
+use cass_internal_api::cass_int32_t;
+use cass_internal_api::cass_int64_t;
+use cass_internal_api::cass_float_t;
+use cass_internal_api::cass_double_t;
+use cass_internal_api::cass_byte_t;
 
 use collection::CassCollection;
 use error::CassError;

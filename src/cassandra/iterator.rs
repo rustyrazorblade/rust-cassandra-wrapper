@@ -13,7 +13,7 @@ impl Drop for CassIterator {
 
 #[allow(dead_code)]
 pub struct CassIterator {
-  pub cass_iterator:*mut self::cass_internal_api::CassIterator,
+  pub cass_iterator:*mut cass_internal_api::CassIterator,
 }
 
 #[allow(dead_code)]

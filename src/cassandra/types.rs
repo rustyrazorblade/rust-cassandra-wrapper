@@ -3,19 +3,19 @@ extern crate libc;
 
 use std::c_str::CString;
 
-use self::cass_internal_api::cass_size_t;
-use self::cass_internal_api::cass_byte_t;
-use self::cass_internal_api::cass_bool_t;
-use self::cass_internal_api::cass_int32_t;
-use self::cass_internal_api::cass_int64_t;
-use self::cass_internal_api::cass_float_t;
-use self::cass_internal_api::cass_double_t;
-use self::cass_internal_api::cass_uint64_t;
-use self::cass_internal_api::cass_uint8_t;
+use cass_internal_api::cass_size_t;
+use cass_internal_api::cass_byte_t;
+use cass_internal_api::cass_bool_t;
+use cass_internal_api::cass_int32_t;
+use cass_internal_api::cass_int64_t;
+use cass_internal_api::cass_float_t;
+use cass_internal_api::cass_double_t;
+use cass_internal_api::cass_uint64_t;
+use cass_internal_api::cass_uint8_t;
 
 use error::CassError;
 
-use self::libc::c_char;
+use libc::c_char;
 
 use std::fmt::Show;
 use std::fmt::Formatter;
@@ -65,7 +65,7 @@ pub struct CassDecimal {
 
 #[allow(dead_code)]
 pub struct CassValueType {
-  pub cass_value_type:cass_internal_api::CassValueType,
+  cass_value_type:cass_internal_api::CassValueType,
 }
 
 #[allow(dead_code)]
@@ -75,7 +75,7 @@ pub struct CassBoolType {
 
 #[allow(dead_code)]
 pub struct CassSizeType {
-  pub cass_size_type:cass_internal_api::cass_size_t,
+  cass_size_type:cass_internal_api::cass_size_t,
 }
 
 #[allow(dead_code)]

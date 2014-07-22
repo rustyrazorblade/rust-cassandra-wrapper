@@ -1,8 +1,8 @@
 extern crate cass_internal_api;
 extern crate libc;
 
-use self::libc::c_char;
-use self::cass_internal_api::cass_size_t;
+use libc::c_char;
+use cass_internal_api::cass_size_t;
 
 use future::CassFuture;
 use session::CassSession;
