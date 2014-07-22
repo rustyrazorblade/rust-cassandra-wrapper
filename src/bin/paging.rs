@@ -3,7 +3,6 @@
 #[phase(plugin, link)] extern crate log;
 extern crate libc;
 extern crate collections;
-extern crate cass_internal_api;
 extern crate cassandra;
 
 use cassandra::CassStatement;

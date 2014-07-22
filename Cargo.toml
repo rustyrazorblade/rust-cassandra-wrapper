@@ -24,7 +24,7 @@ name="async"
 path="src/bin/async.rs"
 
 [[lib]]
-name = "cassandra" # the name of the library to generate
+name = "cassandra" #
 path = "src/cassandra/mod.rs"
 
 [dependencies.rust-cassandra-internal-api]

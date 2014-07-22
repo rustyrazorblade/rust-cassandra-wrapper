@@ -1,5 +1,4 @@
 extern crate log;
-extern crate cass_internal_api;
 extern crate libc;
 extern crate cassandra;
 
