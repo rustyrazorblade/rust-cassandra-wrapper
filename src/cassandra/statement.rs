@@ -17,21 +17,18 @@ use self::cass_internal_api::cass_float_t;
 use self::cass_internal_api::cass_double_t;
 use self::cass_internal_api::cass_byte_t;
 
-use cassandra::collection::CassCollection;
-use cassandra::error::CassError;
-use cassandra::types::CassDecimal;
-use cassandra::types::CassInet;
-use cassandra::types::CassUuid;
-use cassandra::types::CassBytes;
-use cassandra::types::CassString;
-use cassandra::consistency::CASS_CONSISTENCY;
-//use cassandra::consistency::CassConsistency;
+use collection::CassCollection;
+use error::CassError;
+use types::CassDecimal;
+use types::CassInet;
+use types::CassUuid;
+use types::CassBytes;
+use types::CassString;
+use result::CassResult;
 
 use std::fmt::Show;
 use std::fmt::Formatter;
 use std::fmt::Result;
-
-use std::kinds::marker::NoCopy;
 
 #[allow(dead_code)]
 pub struct CassStatement {
@@ -52,13 +49,13 @@ impl Drop for CassStatement {
 }
 
 #[allow(dead_code)]
-impl<'a> CassStatement {
-pub fn new(statement_string: CassString, parameter_count: cass_size_t, consistency: CASS_CONSISTENCY) ->  CassStatement {unsafe{
+impl CassStatement {
+pub fn new(statement_string: &CassString, parameter_count: cass_size_t) ->  CassStatement {unsafe{
   let statement = cass_internal_api::cass_statement_new(statement_string.cass_string,parameter_count);
   CassStatement{cass_statement:statement}
 }}
 
-pub fn build_from_string(statement_string:String, parameter_count: cass_size_t, consistency: CASS_CONSISTENCY) -> CassStatement {unsafe{
+pub fn build_from_string(statement_string:String, parameter_count: cass_size_t) -> CassStatement {unsafe{
   let query_cstring = statement_string.to_c_str();
   let query = cass_internal_api::cass_string_init(query_cstring.as_ptr());
   CassStatement{cass_statement:cass_internal_api::cass_statement_new(query,parameter_count)}
@@ -68,6 +65,17 @@ pub fn build_from_string(statement_string:String, parameter_count: cass_size_t, 
 pub fn mytest () {
   println!{"test"};
 }
+
+pub fn set_paging_size( &mut self, page_size: ::libc::c_int) -> Option<CassError> {unsafe{
+  //let ref mut myself = self;
+  let error = CassError{cass_error:cass_internal_api::cass_statement_set_paging_size(self.cass_statement,page_size)};
+  if error.is_error() {return Some(error)} else {return None}
+}}
+
+ pub fn set_paging_state(&mut self, result: &mut CassResult) -> Option<CassError> {unsafe{
+   let error = CassError{cass_error:cass_internal_api::cass_statement_set_paging_state(self.cass_statement,result.cass_result)};
+   if error.is_error() {return Some(error)} else {return None}
+ }}
 
   pub fn bind_null(&mut self, index: cass_size_t) -> CassError {unsafe{
     CassError{cass_error:cass_internal_api::cass_statement_bind_null(self.cass_statement,index)}
@@ -117,7 +125,7 @@ pub fn mytest () {
     CassError{cass_error:cass_internal_api::cass_statement_bind_custom(self.cass_statement,index,size,output)}
   }}
 
-  pub fn bind_collection(&mut self, index: cass_size_t, collection: CassCollection, is_map: cass_bool_t) -> CassError {unsafe{
+  pub fn bind_collection(&mut self, index: cass_size_t, collection: CassCollection) -> CassError {unsafe{
     CassError{cass_error:cass_internal_api::cass_statement_bind_collection(self.cass_statement,index,&*collection.cass_collection)}
   }}
 }

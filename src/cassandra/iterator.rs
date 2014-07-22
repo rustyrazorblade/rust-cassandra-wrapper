@@ -1,8 +1,8 @@
 #[allow(dead_code)]
 extern crate cass_internal_api;
 
-use cassandra::row::CassRow;
-use cassandra::types::CassValue;
+use row::CassRow;
+use types::CassValue;
 
 impl Drop for CassIterator {
   fn drop(&mut self) {unsafe{

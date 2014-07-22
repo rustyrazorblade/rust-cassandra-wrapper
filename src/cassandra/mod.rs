@@ -1,23 +1,43 @@
-// #![crate_name = "cassandra"]
-// #![crate_type = "lib"]
+#![crate_name = "cassandra"]
+#![crate_type = "lib"]
 extern crate libc;
 extern crate cass_internal_api;
 
+pub use session::CassSession;
+pub use cluster::CassCluster;
+pub use error::CassError;
+pub use future::CassFuture;
+pub use statement::CassStatement;
+pub use row::CassRow;
+pub use batch::CassBatch;
+pub use result::CassResult;
+pub use types::CassValue;
+pub use types::CassString;
+pub use collection::CassCollection;
+pub use iterator::CassIterator;
+pub use types::CassUuid;
+pub use types::CassBytes;
+pub use types::CassInet;
+pub use types::CassInt32Type;
+pub use types::CassDecimal;
+pub use types::CassInt64Type;
+pub use types::CassFloatType;
+pub use types::CassDoubleType;
+pub use types::CassBoolType;
+pub use statement::CassPrepared;
+pub use consistency::CASS_CONSISTENCY_ONE;
+pub use batch::CASS_BATCH_TYPE_LOGGED;
 
-
-//use self::cluster::new;
-pub mod cassandra {
-#[path="../session.rs"] pub mod session;
-#[path="../cluster.rs"] pub mod cluster;
-#[path="../option.rs"] pub mod option;
-#[path="../error.rs"] pub mod error;
-#[path="../future.rs"] pub mod future;
-#[path="../statement.rs"] pub mod statement;
-#[path="../row.rs"] pub mod row;
-#[path="../batch.rs"] pub mod batch;
-#[path="../result.rs"] pub mod result;
-#[path="../consistency.rs"] pub mod consistency;
-#[path="../types.rs"] pub mod types;
-#[path="../collection.rs"] pub mod collection;
-#[path="../iterator.rs"] pub mod iterator;
-}
+mod session;
+mod cluster;
+mod option;
+mod error;
+mod future;
+mod statement;
+mod row;
+mod batch;
+mod result;
+mod consistency;
+mod types;
+mod collection;
+mod iterator;

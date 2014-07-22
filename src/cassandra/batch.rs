@@ -1,13 +1,11 @@
 extern crate cass_internal_api;
 extern crate libc;
-use cassandra::statement::CassStatement;
-use cassandra::error::CassError;
-use cassandra::consistency::CASS_CONSISTENCY;
-
-
-static CASS_BATCH_TYPE_LOGGED:u32=cass_internal_api::CASS_BATCH_TYPE_LOGGED;
+use CassStatement;
+use CassError;
 
 #[allow(non_camel_case_types)] pub type CassBatchType = libc::c_uint;
+pub static CASS_BATCH_TYPE_LOGGED:u32 = cass_internal_api::CASS_BATCH_TYPE_LOGGED;
+
 
 #[allow(dead_code)]
 pub struct CassBatch {
@@ -16,7 +14,8 @@ pub struct CassBatch {
 
 #[allow(dead_code)]
 impl CassBatch {
-  pub fn new(consistency:CASS_CONSISTENCY, batch_type: CassBatchType) -> CassBatch {unsafe{
+
+  pub fn new(batch_type: CassBatchType) -> CassBatch {unsafe{
     CassBatch{cass_batch:cass_internal_api::cass_batch_new(batch_type)}
   }}
 

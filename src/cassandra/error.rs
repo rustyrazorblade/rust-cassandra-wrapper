@@ -4,7 +4,7 @@ extern crate libc;
 use self::libc::c_char;
 
 #[allow(dead_code)]
-pub static CASS_OK:u32 = cass_internal_api::CASS_OK;
+static CASS_OK:u32 = cass_internal_api::CASS_OK;
 
 #[allow(dead_code)]
 #[deriving(Show)]

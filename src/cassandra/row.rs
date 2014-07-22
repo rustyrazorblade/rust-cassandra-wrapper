@@ -1,7 +1,7 @@
 extern crate cass_internal_api;
 
-use cassandra::iterator::CassIterator;
-use cassandra::types::CassValue;
+use CassIterator;
+use CassValue;
 
 #[path = "../cassandra/mod.rs"] mod cassandra
 {

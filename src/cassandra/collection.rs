@@ -1,24 +1,20 @@
 extern crate cass_internal_api;
 
-use cassandra::error::CassError;
-use cassandra::types::CassDecimal;
-use cassandra::types::CassInet;
-use cassandra::types::CassUuid;
-use cassandra::types::CassBytes;
-use cassandra::types::CassString;
-use cassandra::types::CassBoolType;
-use cassandra::types::CassDoubleType;
-use cassandra::types::CassFloatType;
-use cassandra::types::CassInt64Type;
-use cassandra::types::CassInt32Type;
-use cassandra::types::CassSizeType;
-
-use std::kinds::marker::NoCopy;
+use error::CassError;
+use types::CassDecimal;
+use types::CassInet;
+use types::CassUuid;
+use types::CassBytes;
+use types::CassString;
+use types::CassBoolType;
+use types::CassDoubleType;
+use types::CassFloatType;
+use types::CassInt64Type;
+use types::CassInt32Type;
 
 #[allow(dead_code)]
 pub struct CassCollection {
   pub cass_collection:*mut cass_internal_api::CassCollection,
-  pub nocopy:NoCopy
 }
 
 #[allow(dead_code)]
