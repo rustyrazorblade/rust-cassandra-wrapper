@@ -3,8 +3,6 @@
 extern crate libc;
 extern crate cass_internal_api;
 
-pub use cluster::CassCluster;
-pub use batch::CassBatch;
 pub use error::CassError;
 pub use future::CassFuture;
 pub use row::CassRow;
@@ -35,6 +33,16 @@ pub struct CassSession {
 #[allow(dead_code)]
 pub struct CassStatement {
    pub cass_statement:*mut cass_internal_api::CassStatement
+}
+
+#[allow(dead_code)]
+pub struct CassBatch {
+  _protected:*mut cass_internal_api::CassBatch,
+}
+
+#[allow(dead_code)]
+pub struct CassCluster {
+  cass_cluster:*mut cass_internal_api::CassCluster
 }
 
 mod session;

@@ -7,14 +7,10 @@ use cass_internal_api::cass_size_t;
 use future::CassFuture;
 use super::CassSession;
 use error::CassError;
+use super::CassCluster;
 
 #[allow(dead_code)]
-pub struct CassCluster {
-  cass_cluster:*mut cass_internal_api::CassCluster
-}
-
-#[allow(dead_code)]
-impl CassCluster {
+impl super::CassCluster {
 
   fn new() -> CassCluster {unsafe{
     CassCluster{cass_cluster:cass_internal_api::cass_cluster_new()}
