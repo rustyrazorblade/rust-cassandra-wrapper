@@ -7,7 +7,6 @@ pub use cluster::CassCluster;
 pub use batch::CassBatch;
 pub use error::CassError;
 pub use future::CassFuture;
-pub use statement::CassStatement;
 pub use row::CassRow;
 pub use result::CassResult;
 pub use types::CassValue;
@@ -31,6 +30,11 @@ pub use batch::CASS_BATCH_TYPE_LOGGED;
 #[allow(dead_code)]
 pub struct CassSession {
   pub cass_session:*mut cass_internal_api::CassSession
+}
+
+#[allow(dead_code)]
+pub struct CassStatement {
+   pub cass_statement:*mut cass_internal_api::CassStatement
 }
 
 mod session;

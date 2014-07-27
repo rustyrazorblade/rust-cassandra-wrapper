@@ -16,23 +16,20 @@ use types::CassUuid;
 use types::CassBytes;
 use types::CassString;
 use result::CassResult;
+use super::CassStatement;
 
 use std::fmt::Show;
 use std::fmt::Formatter;
 use std::fmt::Result;
 
-#[allow(dead_code)]
-pub struct CassStatement {
-   pub cass_statement:*mut cass_internal_api::CassStatement
-}
 
-impl Show for CassStatement {
+impl Show for super::CassStatement {
    fn fmt(&self, f: &mut Formatter) -> Result {
      write!(f, "(Statement:{})", self)
     }
 }
 
-impl Drop for CassStatement {
+impl Drop for super::CassStatement {
   fn drop(&mut self) {unsafe{
     //println!("free my statement");
     cass_internal_api::cass_statement_free(self.cass_statement)
@@ -40,7 +37,7 @@ impl Drop for CassStatement {
 }
 
 #[allow(dead_code)]
-impl CassStatement {
+impl super::CassStatement {
 pub fn new(statement_string: &CassString, parameter_count: cass_size_t) ->  CassStatement {unsafe{
   let statement = cass_internal_api::cass_statement_new(statement_string.cass_string,parameter_count);
   CassStatement{cass_statement:statement}

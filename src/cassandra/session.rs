@@ -1,6 +1,6 @@
 extern crate cass_internal_api;
 
-use statement::CassStatement;
+use super::CassStatement;
 use future::CassFuture;
 use error::CassError;
 use result::CassResult;
@@ -25,7 +25,7 @@ impl super::CassSession {
     CassFuture{cass_future:cass_internal_api::cass_session_prepare(self.cass_session,statement.cass_string)}
   }}
 
-  pub fn execute(&self, statement:&CassStatement) -> Result<CassResult,CassError> {
+  pub fn execute(&self, statement:&super::CassStatement) -> Result<CassResult,CassError> {
 
     let mut future:CassFuture = self.execute_async(statement);
     future.wait();
@@ -36,7 +36,7 @@ impl super::CassSession {
     return Ok(future.get_result());
   }
 
-  pub fn execute_async(&self, statement: &CassStatement) -> CassFuture {unsafe{
+  pub fn execute_async(&self, statement: &super::CassStatement) -> CassFuture {unsafe{
     let future = cass_internal_api::cass_session_execute(self.cass_session,&*statement.cass_statement);
     CassFuture{cass_future:future}
   }}
