@@ -5,16 +5,14 @@ use future::CassFuture;
 use error::CassError;
 use result::CassResult;
 use batch::CassBatch;
+use super::CassSession;
 
 use CassString;
 
-#[allow(dead_code)]
-pub struct CassSession {
-  pub cass_session:*mut cass_internal_api::CassSession
-}
+
 
 #[allow(dead_code)]
-impl CassSession {
+impl super::CassSession {
   pub fn close_async(&self) -> CassFuture {unsafe{
     CassFuture{cass_future:cass_internal_api::cass_session_close(self.cass_session)}
   }}

@@ -5,7 +5,7 @@ use libc::c_char;
 use cass_internal_api::cass_size_t;
 
 use future::CassFuture;
-use session::CassSession;
+use super::CassSession;
 use error::CassError;
 
 #[allow(dead_code)]

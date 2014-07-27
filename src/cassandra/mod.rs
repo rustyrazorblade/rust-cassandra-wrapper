@@ -3,13 +3,12 @@
 extern crate libc;
 extern crate cass_internal_api;
 
-pub use session::CassSession;
 pub use cluster::CassCluster;
+pub use batch::CassBatch;
 pub use error::CassError;
 pub use future::CassFuture;
 pub use statement::CassStatement;
 pub use row::CassRow;
-pub use batch::CassBatch;
 pub use result::CassResult;
 pub use types::CassValue;
 pub use types::CassString;
@@ -27,6 +26,12 @@ pub use types::CassBoolType;
 pub use statement::CassPrepared;
 pub use consistency::CASS_CONSISTENCY_ONE;
 pub use batch::CASS_BATCH_TYPE_LOGGED;
+
+
+#[allow(dead_code)]
+pub struct CassSession {
+  pub cass_session:*mut cass_internal_api::CassSession
+}
 
 mod session;
 mod cluster;

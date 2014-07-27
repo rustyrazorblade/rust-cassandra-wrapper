@@ -3,7 +3,7 @@ extern crate cass_internal_api;
 use cass_internal_api::cass_bool_t;
 use cass_internal_api::cass_duration_t;
 
-use session::CassSession;
+use super::CassSession;
 use error::CassError;
 use result::CassResult;
 use statement::CassPrepared;
