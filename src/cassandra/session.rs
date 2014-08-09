@@ -4,7 +4,7 @@ use super::CassStatement;
 use future::CassFuture;
 use error::CassError;
 use result::CassResult;
-use super::CassBatch;
+use batch::CassBatch;
 use super::CassSession;
 
 use CassString;
@@ -41,7 +41,7 @@ impl super::CassSession {
     CassFuture{cass_future:future}
   }}
 
-  pub fn execute_batch(&self, batch: &super::CassBatch) -> CassFuture {unsafe{
-    CassFuture{cass_future:cass_internal_api::cass_session_execute_batch(self.cass_session,&*batch._protected)}
+  pub fn execute_batch(&self, batch: &CassBatch) -> CassFuture {unsafe{
+    CassFuture{cass_future:cass_internal_api::cass_session_execute_batch(self.cass_session,&*batch.cass_batch)}
   }}
 }
